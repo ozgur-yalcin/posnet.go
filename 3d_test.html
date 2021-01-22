@@ -1,11 +1,19 @@
 <html>
-<head>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
-</head>
 <body>
 <center>
-<form action="https://posnet.yapikredi.com.tr/3DSWebService/YKBPaymentService" method="post">
-
+<form action="https://setmpos.ykb.com/3DSWebService/YKBPaymentService" method="post">
+<input name="mid" type="hidden" value="6706598320" />
+<input name="posnetID" type="hidden" value="9644" />
+<input name="posnetData" type="hidden" value="7E2EAA9FCA48B8499C65AB3B820148E7A31F234B439A01C9ECDE8D42101A0F104F985DB3C2D2DA8EA7E7A468030179E17B0632E13E3CE3D7C5096B7593BEE739BD07A0CDE5B46D05FB61FCEB4961F86DCB47B71E567D1E734C3307D6DB31C324151803F1D24D3259B4C28348566886DB82DC6DE2AEA0506FD38E0015403C1A3D52EE8E0CDA8B0043CAAAFE1A93A1B2CDCAD1B12BC7CA1E8A3CDA84EF" />
+<input name="posnetData2" type="hidden" value="7585932834B151D962D9CCEE5B5775FCDBDC84E5365F4248E79A453601934B855072D1E36535A8F40BF4F9D478B589AC46ECA928" />
+<input name="digest" type="hidden" value="A531D6C260A4573F3753535ED50BE408" />
+<input name="vftCode" type="hidden" value="" />
+<input name="useJokerVadaa" type="hidden" value="1" />
+<input name="url" type="hidden" value="https://www.domain.com/" />
+<input name="merchantReturnURL" type="hidden" value="https://www.domain.com/payment" />
+<input name="openANewWindow" type="hidden" value="0" />
+<input name="lang" type="hidden" value="tr" />
+<input type="submit" name="Submit" value="Doğrulama Yap" /> 
 </form>
 </center>
 </body>
