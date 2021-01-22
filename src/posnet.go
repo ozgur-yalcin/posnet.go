@@ -6,9 +6,9 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"net/url"
 	"strings"
 
-	"github.com/google/uuid"
 	"golang.org/x/text/encoding/charmap"
 )
 
@@ -23,9 +23,9 @@ type API struct {
 
 type Request struct {
 	XMLName    xml.Name    `xml:"posnetRequest,omitempty"`
-	TranDate   interface{} `xml:"tranDateRequired,omitempty"`
 	MerchantID interface{} `xml:"mid,omitempty"`
 	TerminalID interface{} `xml:"tid,omitempty"`
+	TranDate   interface{} `xml:"tranDateRequired,omitempty"`
 	OOS        *OOS        `xml:"oosRequestData,omitempty"`
 	Auth       *Auth       `xml:"auth,omitempty"`
 	Sale       *Sale       `xml:"sale,omitempty"`
@@ -113,20 +113,21 @@ func CharsetReader(charset string, input io.Reader) (io.Reader, error) {
 }
 
 func (api *API) Transaction(request *Request) (response Response) {
-	postdata, _ := xml.MarshalIndent(request, " ", " ")
+	xmldata, _ := xml.MarshalIndent(request, " ", " ")
 	cli := new(http.Client)
-	fmt.Println(EndPoints[api.Bank])
-	fmt.Println(strings.ReplaceAll(xml.Header, "UTF-8", "ISO-8859-9") + string(postdata))
-	req, err := http.NewRequest("POST", EndPoints[api.Bank], strings.NewReader(strings.ReplaceAll(xml.Header, "UTF-8", "ISO-8859-9")+string(postdata)))
+	data := url.Values{}
+	data.Set("xmldata", string(xmldata))
+	req, err := http.NewRequest("POST", EndPoints[api.Bank], strings.NewReader(data.Encode()))
 	if err != nil {
 		log.Println(err)
 		return response
 	}
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded; charset=utf-8")
 	req.Header.Set("X-MERCHANT-ID", fmt.Sprintf("%v", request.MerchantID))
 	req.Header.Set("X-TERMINAL-ID", fmt.Sprintf("%v", request.TerminalID))
+	req.Header.Set("X-CORRELATION-ID", fmt.Sprintf("%v", request.Sale.OrderID))
 	if request.OOS != nil {
 		req.Header.Set("X-POSNET-ID", fmt.Sprintf("%v", request.OOS.PosnetID))
-		req.Header.Set("X-CORRELATION-ID", uuid.New().String())
 	}
 	res, err := cli.Do(req)
 	if err != nil {
