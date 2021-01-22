@@ -12,8 +12,6 @@ func main() {
 	request := new(posnet.Request)
 	request.MerchantID = "6706598320"
 	request.TerminalID = "67005551"
-	request.OOS = new(posnet.OOS)
-	request.OOS.PosnetID = "9644"
 	request.TranDate = "1"
 	request.Sale = new(posnet.Sale)
 	request.Sale.Amount = "2451"                     // Satış tutarı (1,00 -> 100) Son 2 hane kuruş

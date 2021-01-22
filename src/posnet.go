@@ -113,7 +113,7 @@ func CharsetReader(charset string, input io.Reader) (io.Reader, error) {
 }
 
 func (api *API) Transaction(request *Request) (response Response) {
-	xmldata, _ := xml.MarshalIndent(request, " ", " ")
+	xmldata, _ := xml.Marshal(request)
 	cli := new(http.Client)
 	data := url.Values{}
 	data.Set("xmldata", string(xmldata))
