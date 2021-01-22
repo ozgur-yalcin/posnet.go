@@ -2,6 +2,7 @@ package posnet
 
 import (
 	"encoding/xml"
+	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -14,74 +15,63 @@ var EndPoints map[string]string = map[string]string{
 	"yapikreditest": "https://setmpos.ykb.com/PosnetWebService/XML",
 }
 
-var Currencies map[string]string = map[string]string{
-	"TRY": "949",
-	"YTL": "949",
-	"TRL": "949",
-	"TL":  "949",
-	"USD": "840",
-	"EUR": "978",
-	"GBP": "826",
-	"JPY": "392",
-}
-
 type API struct {
 	Bank string
 }
 
 type Request struct {
-	XMLName    xml.Name `xml:"posnetRequest,omitempty"`
-	TranDate   string   `xml:"tranDateRequired,omitempty"`
-	MerchantID string   `xml:"mid,omitempty"`
-	TerminalID string   `xml:"tid,omitempty"`
+	XMLName    xml.Name    `xml:"posnetRequest,omitempty"`
+	TranDate   interface{} `xml:"tranDateRequired,omitempty"`
+	MerchantID interface{} `xml:"mid,omitempty"`
+	TerminalID interface{} `xml:"tid,omitempty"`
 	OOS        struct {
-		PosnetID     string `xml:"posnetid,omitempty"`
-		XID          string `xml:"XID,omitempty"`
-		Amount       string `xml:"amount,omitempty"`
-		CurrencyCode string `xml:"currencyCode,omitempty"`
-		Installment  string `xml:"installment,omitempty"`
-		TranType     string `xml:"tranType,omitempty"`
-		CardHolder   string `xml:"cardHolderName,omitempty"`
-		CardNumber   string `xml:"ccno,omitempty"`
-		ExpireDate   string `xml:"expDate,omitempty"`
-		CVV2         string `xml:"cvc,omitempty"`
+		PosnetID     interface{} `xml:"posnetid,omitempty"`
+		XID          interface{} `xml:"XID,omitempty"`
+		Amount       interface{} `xml:"amount,omitempty"`
+		CurrencyCode interface{} `xml:"currencyCode,omitempty"`
+		Installment  interface{} `xml:"installment,omitempty"`
+		TranType     interface{} `xml:"tranType,omitempty"`
+		CardHolder   interface{} `xml:"cardHolderName,omitempty"`
+		CardNumber   interface{} `xml:"ccno,omitempty"`
+		ExpireDate   interface{} `xml:"expDate,omitempty"`
+		CVV2         interface{} `xml:"cvc,omitempty"`
 	} `xml:"oosRequestData,omitempty"`
 	Auth struct {
-		Amount       string `xml:"amount,omitempty"`
-		CurrencyCode string `xml:"currencyCode,omitempty"`
+		Amount       interface{} `xml:"amount,omitempty"`
+		CurrencyCode interface{} `xml:"currencyCode,omitempty"`
 		Card         struct {
-			InquiryValue string `xml:"inquiryValue,omitempty"`
-			CardNoFirst  string `xml:"cardNoFirst,omitempty"`
-			CardNoLast   string `xml:"cardNoLast,omitempty"`
+			InquiryValue interface{} `xml:"inquiryValue,omitempty"`
+			CardNoFirst  interface{} `xml:"cardNoFirst,omitempty"`
+			CardNoLast   interface{} `xml:"cardNoLast,omitempty"`
 		} `xml:"cardInfo,omitempty"`
-		CVV2        string `xml:"cvc,omitempty"`
-		OrderID     string `xml:"orderID,omitempty"`
-		Installment string `xml:"installment,omitempty"`
+		CVV2        interface{} `xml:"cvc,omitempty"`
+		OrderID     interface{} `xml:"orderID,omitempty"`
+		Installment interface{} `xml:"installment,omitempty"`
 	} `xml:"auth,omitempty"`
 	Sale struct {
-		Amount       string `xml:"amount,omitempty"`
-		CurrencyCode string `xml:"currencyCode,omitempty"`
-		CardNumber   string `xml:"ccno,omitempty"`
-		ExpireDate   string `xml:"expDate,omitempty"`
-		CVV2         string `xml:"cvc,omitempty"`
-		OrderID      string `xml:"orderID,omitempty"`
-		Installment  string `xml:"installment,omitempty"`
+		Amount       interface{} `xml:"amount,omitempty"`
+		CurrencyCode interface{} `xml:"currencyCode,omitempty"`
+		CardNumber   interface{} `xml:"ccno,omitempty"`
+		ExpireDate   interface{} `xml:"expDate,omitempty"`
+		CVV2         interface{} `xml:"cvc,omitempty"`
+		OrderID      interface{} `xml:"orderID,omitempty"`
+		Installment  interface{} `xml:"installment,omitempty"`
 	} `xml:"sale,omitempty"`
 	Capt struct {
-		Amount       string `xml:"amount,omitempty"`
-		CurrencyCode string `xml:"currencyCode,omitempty"`
-		HostLogKey   string `xml:"hostlogkey,omitempty"`
-		Installment  string `xml:"installment,omitempty"`
+		Amount       interface{} `xml:"amount,omitempty"`
+		CurrencyCode interface{} `xml:"currencyCode,omitempty"`
+		HostLogKey   interface{} `xml:"hostlogkey,omitempty"`
+		Installment  interface{} `xml:"installment,omitempty"`
 	} `xml:"capt,omitempty"`
 	Return struct {
-		Amount       string `xml:"amount,omitempty"`
-		CurrencyCode string `xml:"currencyCode,omitempty"`
-		Transaction  string `xml:"transaction,omitempty"`
-		HostLogKey   string `xml:"hostlogkey,omitempty"`
+		Amount       interface{} `xml:"amount,omitempty"`
+		CurrencyCode interface{} `xml:"currencyCode,omitempty"`
+		Transaction  interface{} `xml:"transaction,omitempty"`
+		HostLogKey   interface{} `xml:"hostlogkey,omitempty"`
 	} `xml:"return,omitempty"`
 	Reverse struct {
-		Transaction string `xml:"transaction,omitempty"`
-		HostLogKey  string `xml:"hostlogkey,omitempty"`
+		Transaction interface{} `xml:"transaction,omitempty"`
+		HostLogKey  interface{} `xml:"hostlogkey,omitempty"`
 	} `xml:"reverse,omitempty"`
 }
 
@@ -101,17 +91,19 @@ type Response struct {
 	} `xml:"oosRequestDataResponse,omitempty"`
 }
 
-func (api *API) Transaction(request Request) (response Response) {
-	postdata, _ := xml.Marshal(request)
+func (api *API) Transaction(request *Request) (response Response) {
+	postdata, _ := xml.MarshalIndent(request, " ", " ")
 	cli := new(http.Client)
+	fmt.Println(EndPoints[api.Bank])
+	fmt.Println(xml.Header + string(postdata))
 	req, err := http.NewRequest("POST", EndPoints[api.Bank], strings.NewReader(xml.Header+string(postdata)))
 	if err != nil {
 		log.Println(err)
 		return response
 	}
-	req.Header.Set("X-MERCHANT-ID", request.MerchantID)
-	req.Header.Set("X-TERMINAL-ID", request.TerminalID)
-	req.Header.Set("X-POSNET-ID", request.OOS.PosnetID)
+	req.Header.Set("X-MERCHANT-ID", fmt.Sprintf("%v", request.MerchantID))
+	req.Header.Set("X-TERMINAL-ID", fmt.Sprintf("%v", request.TerminalID))
+	req.Header.Set("X-POSNET-ID", fmt.Sprintf("%v", request.OOS.PosnetID))
 	req.Header.Set("X-CORRELATION-ID", uuid.New().String())
 	res, err := cli.Do(req)
 	if err != nil {
