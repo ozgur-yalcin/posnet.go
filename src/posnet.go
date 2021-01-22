@@ -5,10 +5,13 @@ import (
 	"log"
 	"net/http"
 	"strings"
+
+	"github.com/google/uuid"
 )
 
 var EndPoints map[string]string = map[string]string{
-	"yapikredi": "https://posnet.yapikredi.com.tr/PosnetWebService/XML",
+	"yapikredi":     "https://posnet.yapikredi.com.tr/PosnetWebService/XML",
+	"yapikreditest": "https://setmpos.ykb.com/PosnetWebService/XML",
 }
 
 var Currencies map[string]string = map[string]string{
@@ -100,7 +103,17 @@ type Response struct {
 
 func (api *API) Transaction(request Request) (response Response) {
 	postdata, _ := xml.Marshal(request)
-	res, err := http.Post(EndPoints[api.Bank], "text/xml; charset=utf-8", strings.NewReader(xml.Header+string(postdata)))
+	cli := new(http.Client)
+	req, err := http.NewRequest("POST", EndPoints[api.Bank], strings.NewReader(xml.Header+string(postdata)))
+	if err != nil {
+		log.Println(err)
+		return response
+	}
+	req.Header.Set("X-MERCHANT-ID", request.MerchantID)
+	req.Header.Set("X-TERMINAL-ID", request.TerminalID)
+	req.Header.Set("X-POSNET-ID", request.OOS.PosnetID)
+	req.Header.Set("X-CORRELATION-ID", uuid.New().String())
+	res, err := cli.Do(req)
 	if err != nil {
 		log.Println(err)
 		return response

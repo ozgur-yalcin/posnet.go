@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	api := &posnet.API{"yapikredi"} // "yapikredi"
+	api := &posnet.API{"yapikreditest"} // "yapikredi"
 	request := posnet.Request{}
 
 	response := api.Transaction(request)
