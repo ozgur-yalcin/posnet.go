@@ -2,7 +2,6 @@ package posnet
 
 import (
 	"encoding/xml"
-	"fmt"
 	"log"
 	"net/http"
 	"net/url"
@@ -115,11 +114,11 @@ func (api *API) Transaction(request *Request) (response Response) {
 		return response
 	}
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-	req.Header.Set("X-MERCHANT-ID", fmt.Sprintf("%v", request.MerchantID))
-	req.Header.Set("X-TERMINAL-ID", fmt.Sprintf("%v", request.TerminalID))
-	req.Header.Set("X-CORRELATION-ID", fmt.Sprintf("%v", request.Sale.OrderID))
+	req.Header.Set("X-MERCHANT-ID", request.MerchantID.(string))
+	req.Header.Set("X-TERMINAL-ID", request.TerminalID.(string))
+	req.Header.Set("X-CORRELATION-ID", request.Sale.OrderID.(string))
 	if request.OOS != nil {
-		req.Header.Set("X-POSNET-ID", fmt.Sprintf("%v", request.OOS.PosnetID))
+		req.Header.Set("X-POSNET-ID", request.OOS.PosnetID.(string))
 	}
 	res, err := cli.Do(req)
 	if err != nil {
