@@ -13,6 +13,7 @@ func main() {
 	request.MerchantID = "6700000067"
 	request.TerminalID = "67000067"
 	request.TranDate = "1"
+	request.Sale = new(posnet.Sale)
 	request.Sale.Amount = "100"                  // Satış tutarı (1,00 -> 100) Son 2 hane kuruş
 	request.Sale.CurrencyCode = "TL"             // TL, US, EU
 	request.Sale.CardNumber = "4506349116608409" // Kart numarası
