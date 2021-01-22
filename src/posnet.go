@@ -3,11 +3,13 @@ package posnet
 import (
 	"encoding/xml"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"strings"
 
 	"github.com/google/uuid"
+	"golang.org/x/text/encoding/charmap"
 )
 
 var EndPoints map[string]string = map[string]string{
@@ -103,12 +105,19 @@ type Response struct {
 	} `xml:"oosRequestDataResponse,omitempty"`
 }
 
+func CharsetReader(charset string, input io.Reader) (io.Reader, error) {
+	if strings.ToUpper(charset) == "ISO-8859-9" {
+		return charmap.Windows1254.NewDecoder().Reader(input), nil
+	}
+	return nil, fmt.Errorf("Unknown charset: %s", charset)
+}
+
 func (api *API) Transaction(request *Request) (response Response) {
 	postdata, _ := xml.MarshalIndent(request, " ", " ")
 	cli := new(http.Client)
 	fmt.Println(EndPoints[api.Bank])
-	fmt.Println(xml.Header + string(postdata))
-	req, err := http.NewRequest("POST", EndPoints[api.Bank], strings.NewReader(xml.Header+string(postdata)))
+	fmt.Println(strings.ReplaceAll(xml.Header, "UTF-8", "ISO-8859-9") + string(postdata))
+	req, err := http.NewRequest("POST", EndPoints[api.Bank], strings.NewReader(strings.ReplaceAll(xml.Header, "UTF-8", "ISO-8859-9")+string(postdata)))
 	if err != nil {
 		log.Println(err)
 		return response
@@ -117,8 +126,8 @@ func (api *API) Transaction(request *Request) (response Response) {
 	req.Header.Set("X-TERMINAL-ID", fmt.Sprintf("%v", request.TerminalID))
 	if request.OOS != nil {
 		req.Header.Set("X-POSNET-ID", fmt.Sprintf("%v", request.OOS.PosnetID))
+		req.Header.Set("X-CORRELATION-ID", uuid.New().String())
 	}
-	req.Header.Set("X-CORRELATION-ID", uuid.New().String())
 	res, err := cli.Do(req)
 	if err != nil {
 		log.Println(err)
@@ -126,6 +135,7 @@ func (api *API) Transaction(request *Request) (response Response) {
 	}
 	defer res.Body.Close()
 	decoder := xml.NewDecoder(res.Body)
+	decoder.CharsetReader = CharsetReader
 	decoder.Decode(&response)
 	return response
 }
