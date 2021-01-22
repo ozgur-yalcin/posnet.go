@@ -3,13 +3,12 @@ package posnet
 import (
 	"encoding/xml"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 	"net/url"
 	"strings"
 
-	"golang.org/x/text/encoding/charmap"
+	"golang.org/x/net/html/charset"
 )
 
 var EndPoints map[string]string = map[string]string{
@@ -105,10 +104,6 @@ type Response struct {
 	} `xml:"oosRequestDataResponse,omitempty"`
 }
 
-func CharsetReader(label string, input io.Reader) (io.Reader, error) {
-	return charmap.Windows1254.NewDecoder().Reader(input), nil
-}
-
 func (api *API) Transaction(request *Request) (response Response) {
 	xmldata, _ := xml.Marshal(request)
 	cli := new(http.Client)
@@ -119,7 +114,7 @@ func (api *API) Transaction(request *Request) (response Response) {
 		log.Println(err)
 		return response
 	}
-	req.Header.Add("Content-Type", "application/x-www-form-urlencoded; charset=windows-1254")
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 	req.Header.Set("X-MERCHANT-ID", fmt.Sprintf("%v", request.MerchantID))
 	req.Header.Set("X-TERMINAL-ID", fmt.Sprintf("%v", request.TerminalID))
 	req.Header.Set("X-CORRELATION-ID", fmt.Sprintf("%v", request.Sale.OrderID))
@@ -133,7 +128,7 @@ func (api *API) Transaction(request *Request) (response Response) {
 	}
 	defer res.Body.Close()
 	decoder := xml.NewDecoder(res.Body)
-	decoder.CharsetReader = CharsetReader
+	decoder.CharsetReader = charset.NewReaderLabel
 	decoder.Decode(&response)
 	return response
 }
