@@ -1,2 +1,2 @@
 # posnet
-Posnet (Yapı Kredi, Vakıfbank, Anadolubank) Omnipay Sanal POS API with golang
+Posnet (Yapı Kredi) Sanal POS API with golang
