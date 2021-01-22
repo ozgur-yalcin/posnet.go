@@ -88,18 +88,18 @@ type Reverse struct {
 }
 
 type Response struct {
-	XMLName    xml.Name `xml:"posnetResponse,omitempty"`
-	Approved   string   `xml:"approved,omitempty"`
-	HostLogKey string   `xml:"hostlogkey,omitempty"`
-	AuthCode   string   `xml:"authCode,omitempty"`
-	RespCode   string   `xml:"respCode,omitempty"`
-	RespText   string   `xml:"respText,omitempty"`
-	TranDate   string   `xml:"tranDate,omitempty"`
-	YourIP     string   `xml:"yourIP,omitempty"`
-	OOS        struct {
-		Data1 string `xml:"data1,omitempty"`
-		Data2 string `xml:"data2,omitempty"`
-		Sign  string `xml:"sign,omitempty"`
+	XMLName    xml.Name    `xml:"posnetResponse,omitempty"`
+	Approved   interface{} `xml:"approved,omitempty"`
+	HostLogKey interface{} `xml:"hostlogkey,omitempty"`
+	AuthCode   interface{} `xml:"authCode,omitempty"`
+	RespCode   interface{} `xml:"respCode,omitempty"`
+	RespText   interface{} `xml:"respText,omitempty"`
+	TranDate   interface{} `xml:"tranDate,omitempty"`
+	YourIP     interface{} `xml:"yourIP,omitempty"`
+	OOS        *struct {
+		Data1 interface{} `xml:"data1,omitempty"`
+		Data2 interface{} `xml:"data2,omitempty"`
+		Sign  interface{} `xml:"sign,omitempty"`
 	} `xml:"oosRequestDataResponse,omitempty"`
 }
 
