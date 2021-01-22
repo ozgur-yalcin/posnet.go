@@ -35,44 +35,46 @@ type Request struct {
 type OOS struct {
 	PosnetID     interface{} `xml:"posnetid,omitempty"`
 	XID          interface{} `xml:"XID,omitempty"`
-	Amount       interface{} `xml:"amount,omitempty"`
-	CurrencyCode interface{} `xml:"currencyCode,omitempty"`
-	Installment  interface{} `xml:"installment,omitempty"`
 	TranType     interface{} `xml:"tranType,omitempty"`
 	CardHolder   interface{} `xml:"cardHolderName,omitempty"`
 	CardNumber   interface{} `xml:"ccno,omitempty"`
 	ExpireDate   interface{} `xml:"expDate,omitempty"`
 	CVV2         interface{} `xml:"cvc,omitempty"`
+	Amount       interface{} `xml:"amount,omitempty"`
+	CurrencyCode interface{} `xml:"currencyCode,omitempty"`
+	Installment  interface{} `xml:"installment,omitempty"`
 }
 
 type Auth struct {
+	Card         *Card       `xml:"cardInfo,omitempty"`
+	CVV2         interface{} `xml:"cvc,omitempty"`
 	Amount       interface{} `xml:"amount,omitempty"`
 	CurrencyCode interface{} `xml:"currencyCode,omitempty"`
-	Card         struct {
-		InquiryValue interface{} `xml:"inquiryValue,omitempty"`
-		CardNoFirst  interface{} `xml:"cardNoFirst,omitempty"`
-		CardNoLast   interface{} `xml:"cardNoLast,omitempty"`
-	} `xml:"cardInfo,omitempty"`
-	CVV2        interface{} `xml:"cvc,omitempty"`
-	OrderID     interface{} `xml:"orderID,omitempty"`
-	Installment interface{} `xml:"installment,omitempty"`
+	Installment  interface{} `xml:"installment,omitempty"`
+	OrderID      interface{} `xml:"orderID,omitempty"`
+}
+
+type Card struct {
+	InquiryValue interface{} `xml:"inquiryValue,omitempty"`
+	CardNoFirst  interface{} `xml:"cardNoFirst,omitempty"`
+	CardNoLast   interface{} `xml:"cardNoLast,omitempty"`
 }
 
 type Sale struct {
-	Amount       interface{} `xml:"amount,omitempty"`
-	CurrencyCode interface{} `xml:"currencyCode,omitempty"`
 	CardNumber   interface{} `xml:"ccno,omitempty"`
 	ExpireDate   interface{} `xml:"expDate,omitempty"`
 	CVV2         interface{} `xml:"cvc,omitempty"`
-	OrderID      interface{} `xml:"orderID,omitempty"`
+	Amount       interface{} `xml:"amount,omitempty"`
+	CurrencyCode interface{} `xml:"currencyCode,omitempty"`
 	Installment  interface{} `xml:"installment,omitempty"`
+	OrderID      interface{} `xml:"orderID,omitempty"`
 }
 
 type Capt struct {
 	Amount       interface{} `xml:"amount,omitempty"`
 	CurrencyCode interface{} `xml:"currencyCode,omitempty"`
-	HostLogKey   interface{} `xml:"hostlogkey,omitempty"`
 	Installment  interface{} `xml:"installment,omitempty"`
+	HostLogKey   interface{} `xml:"hostlogkey,omitempty"`
 }
 
 type Return struct {
@@ -105,7 +107,6 @@ type Response struct {
 
 func (api *API) Transaction(request *Request) (response Response) {
 	xmldata, _ := xml.Marshal(request)
-	cli := new(http.Client)
 	urldata := url.Values{}
 	urldata.Set("xmldata", string(xmldata))
 	req, err := http.NewRequest("POST", EndPoints[api.Bank], strings.NewReader(urldata.Encode()))
@@ -120,6 +121,7 @@ func (api *API) Transaction(request *Request) (response Response) {
 	if request.OOS != nil {
 		req.Header.Set("X-POSNET-ID", request.OOS.PosnetID.(string))
 	}
+	cli := new(http.Client)
 	res, err := cli.Do(req)
 	if err != nil {
 		log.Println(err)
