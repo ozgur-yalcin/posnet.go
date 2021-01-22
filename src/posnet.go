@@ -1,16 +1,15 @@
 package posnet
 
 import (
-	"bytes"
 	"encoding/xml"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"net/url"
 	"strings"
 
-	"golang.org/x/net/html/charset"
+	"golang.org/x/text/encoding/charmap"
 )
 
 var EndPoints map[string]string = map[string]string{
@@ -106,17 +105,21 @@ type Response struct {
 	} `xml:"oosRequestDataResponse,omitempty"`
 }
 
+func CharsetReader(label string, input io.Reader) (io.Reader, error) {
+	return charmap.Windows1254.NewDecoder().Reader(input), nil
+}
+
 func (api *API) Transaction(request *Request) (response Response) {
 	xmldata, _ := xml.Marshal(request)
 	cli := new(http.Client)
-	data := url.Values{}
-	data.Set("xmldata", string(xmldata))
-	req, err := http.NewRequest("POST", EndPoints[api.Bank], strings.NewReader(data.Encode()))
+	urldata := url.Values{}
+	urldata.Set("xmldata", string(xmldata))
+	req, err := http.NewRequest("POST", EndPoints[api.Bank], strings.NewReader(urldata.Encode()))
 	if err != nil {
 		log.Println(err)
 		return response
 	}
-	req.Header.Add("Content-Type", "application/x-www-form-urlencoded; charset=utf-8")
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded; charset=windows-1254")
 	req.Header.Set("X-MERCHANT-ID", fmt.Sprintf("%v", request.MerchantID))
 	req.Header.Set("X-TERMINAL-ID", fmt.Sprintf("%v", request.TerminalID))
 	req.Header.Set("X-CORRELATION-ID", fmt.Sprintf("%v", request.Sale.OrderID))
@@ -129,9 +132,8 @@ func (api *API) Transaction(request *Request) (response Response) {
 		return response
 	}
 	defer res.Body.Close()
-	readxml, _ := ioutil.ReadAll(res.Body)
-	decoder := xml.NewDecoder(bytes.NewReader(bytes.ToValidUTF8(readxml, []byte(""))))
-	decoder.CharsetReader = charset.NewReaderLabel
+	decoder := xml.NewDecoder(res.Body)
+	decoder.CharsetReader = CharsetReader
 	decoder.Decode(&response)
 	return response
 }
