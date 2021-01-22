@@ -1,15 +1,16 @@
 package posnet
 
 import (
+	"bytes"
 	"encoding/xml"
 	"fmt"
-	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
 	"strings"
 
-	"golang.org/x/text/encoding/charmap"
+	"golang.org/x/net/html/charset"
 )
 
 var EndPoints map[string]string = map[string]string{
@@ -90,26 +91,19 @@ type Reverse struct {
 }
 
 type Response struct {
-	XMLName    xml.Name    `xml:"posnetResponse,omitempty"`
-	Approved   interface{} `xml:"approved,omitempty"`
-	HostLogKey interface{} `xml:"hostlogkey,omitempty"`
-	AuthCode   interface{} `xml:"authCode,omitempty"`
-	RespCode   interface{} `xml:"respCode,omitempty"`
-	RespText   interface{} `xml:"respText,omitempty"`
-	TranDate   interface{} `xml:"tranDate,omitempty"`
-	YourIP     interface{} `xml:"yourIP,omitempty"`
-	OOS        *struct {
-		Data1 interface{} `xml:"data1,omitempty"`
-		Data2 interface{} `xml:"data2,omitempty"`
-		Sign  interface{} `xml:"sign,omitempty"`
+	XMLName    xml.Name `xml:"posnetResponse,omitempty"`
+	Approved   string   `xml:"approved,omitempty"`
+	HostLogKey string   `xml:"hostlogkey,omitempty"`
+	AuthCode   string   `xml:"authCode,omitempty"`
+	RespCode   string   `xml:"respCode,omitempty"`
+	RespText   string   `xml:"respText,omitempty"`
+	TranDate   string   `xml:"tranDate,omitempty"`
+	YourIP     string   `xml:"yourIP,omitempty"`
+	OOS        struct {
+		Data1 string `xml:"data1,omitempty"`
+		Data2 string `xml:"data2,omitempty"`
+		Sign  string `xml:"sign,omitempty"`
 	} `xml:"oosRequestDataResponse,omitempty"`
-}
-
-func CharsetReader(charset string, input io.Reader) (io.Reader, error) {
-	if strings.ToUpper(charset) == "ISO-8859-9" {
-		return charmap.Windows1254.NewDecoder().Reader(input), nil
-	}
-	return nil, fmt.Errorf("Unknown charset: %s", charset)
 }
 
 func (api *API) Transaction(request *Request) (response Response) {
@@ -135,8 +129,9 @@ func (api *API) Transaction(request *Request) (response Response) {
 		return response
 	}
 	defer res.Body.Close()
-	decoder := xml.NewDecoder(res.Body)
-	decoder.CharsetReader = CharsetReader
+	readxml, _ := ioutil.ReadAll(res.Body)
+	decoder := xml.NewDecoder(bytes.NewReader(bytes.ToValidUTF8(readxml, []byte(""))))
+	decoder.CharsetReader = charset.NewReaderLabel
 	decoder.Decode(&response)
 	return response
 }
