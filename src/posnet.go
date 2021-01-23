@@ -22,16 +22,18 @@ type API struct {
 }
 
 type Request struct {
-	XMLName    xml.Name    `xml:"posnetRequest,omitempty"`
-	MerchantID interface{} `xml:"mid,omitempty"`
-	TerminalID interface{} `xml:"tid,omitempty"`
-	TranDate   interface{} `xml:"tranDateRequired,omitempty"`
-	OOS        *OOS        `xml:"oosRequestData,omitempty"`
-	Auth       *Auth       `xml:"auth,omitempty"`
-	Sale       *Sale       `xml:"sale,omitempty"`
-	Capt       *Capt       `xml:"capt,omitempty"`
-	Return     *Return     `xml:"return,omitempty"`
-	Reverse    *Reverse    `xml:"reverse,omitempty"`
+	XMLName     xml.Name     `xml:"posnetRequest,omitempty"`
+	MerchantID  interface{}  `xml:"mid,omitempty"`
+	TerminalID  interface{}  `xml:"tid,omitempty"`
+	TranDate    interface{}  `xml:"tranDateRequired,omitempty"`
+	OOS         *OOS         `xml:"oosRequestData,omitempty"`
+	OOSMerchant *OOSMerchant `xml:"oosResolveMerchantData,omitempty"`
+	OOSTran     *OOSTran     `xml:"oosTranData,omitempty"`
+	Auth        *Auth        `xml:"auth,omitempty"`
+	Sale        *Sale        `xml:"sale,omitempty"`
+	Capt        *Capt        `xml:"capt,omitempty"`
+	Return      *Return      `xml:"return,omitempty"`
+	Reverse     *Reverse     `xml:"reverse,omitempty"`
 }
 
 type OOS struct {
@@ -45,6 +47,19 @@ type OOS struct {
 	Amount       interface{} `xml:"amount,omitempty"`
 	CurrencyCode interface{} `xml:"currencyCode,omitempty"`
 	Installment  interface{} `xml:"installment,omitempty"`
+}
+
+type OOSMerchant struct {
+	BankData     interface{} `xml:"bankData,omitempty"`
+	MerchantData interface{} `xml:"merchantData,omitempty"`
+	SIGN         interface{} `xml:"sign,omitempty"`
+	MAC          interface{} `xml:"mac,omitempty"`
+}
+
+type OOSTran struct {
+	BankData interface{} `xml:"bankData,omitempty"`
+	WpAmount interface{} `xml:"wpAmount,omitempty"`
+	MAC      interface{} `xml:"mac,omitempty"`
 }
 
 type Auth struct {
@@ -96,15 +111,26 @@ type Response struct {
 	Approved   string   `xml:"approved,omitempty"`
 	HostLogKey string   `xml:"hostlogkey,omitempty"`
 	AuthCode   string   `xml:"authCode,omitempty"`
-	RespCode   string   `xml:"respCode,omitempty"`
-	RespText   string   `xml:"respText,omitempty"`
+	ErrorCode  string   `xml:"respCode,omitempty"`
+	ErrorText  string   `xml:"respText,omitempty"`
 	TranDate   string   `xml:"tranDate,omitempty"`
 	YourIP     string   `xml:"yourIP,omitempty"`
+	MAC        string   `xml:"mac,omitempty"`
 	OOS        struct {
 		Data1 string `xml:"data1,omitempty"`
 		Data2 string `xml:"data2,omitempty"`
 		Sign  string `xml:"sign,omitempty"`
 	} `xml:"oosRequestDataResponse,omitempty"`
+	OOSMerchant struct {
+		XID         string `xml:"XID,omitempty"`
+		Amount      string `xml:"amount,omitempty"`
+		Currency    string `xml:"currency,omitempty"`
+		Installment string `xml:"installment,omitempty"`
+		TxStatus    string `xml:"txStatus,omitempty"`
+		MdStatus    string `xml:"mdStatus,omitempty"`
+		MdError     string `xml:"mdErrorMessage,omitempty"`
+		MAC         string `xml:"mac,omitempty"`
+	} `xml:"oosResolveMerchantDataResponse,omitempty"`
 }
 
 func SHA256(data string) (hash string) {
