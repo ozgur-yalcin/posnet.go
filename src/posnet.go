@@ -157,10 +157,8 @@ func (api *API) Transaction(request *Request) (response Response) {
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 	req.Header.Set("X-MERCHANT-ID", request.MerchantID.(string))
 	req.Header.Set("X-TERMINAL-ID", request.TerminalID.(string))
-	if request.Sale != nil {
-		req.Header.Set("X-CORRELATION-ID", request.Sale.OrderID.(string))
-	}
 	if request.OOS != nil {
+		req.Header.Set("X-CORRELATION-ID", request.OOS.XID.(string))
 		req.Header.Set("X-POSNET-ID", request.OOS.PosnetID.(string))
 	}
 	cli := new(http.Client)
