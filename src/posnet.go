@@ -85,6 +85,7 @@ type Sale struct {
 	CurrencyCode interface{} `xml:"currencyCode,omitempty"`
 	Installment  interface{} `xml:"installment,omitempty"`
 	OrderID      interface{} `xml:"orderID,omitempty"`
+	Mailorder    interface{} `xml:"mailorderflag,omitempty"`
 }
 
 type Capt struct {
