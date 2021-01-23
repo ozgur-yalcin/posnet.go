@@ -1,6 +1,8 @@
 package posnet
 
 import (
+	"crypto/sha256"
+	"encoding/base64"
 	"encoding/xml"
 	"log"
 	"net/http"
@@ -103,6 +105,17 @@ type Response struct {
 		Data2 string `xml:"data2,omitempty"`
 		Sign  string `xml:"sign,omitempty"`
 	} `xml:"oosRequestDataResponse,omitempty"`
+}
+
+func SHA256(data string) (hash string) {
+	h := sha256.New()
+	h.Write([]byte(data))
+	hash = base64.URLEncoding.EncodeToString(h.Sum(nil))
+	return hash
+}
+
+func MAC(xid, amount, currency, mid, key, tid string) string {
+	return SHA256(xid + ";" + amount + ";" + currency + ";" + mid + ";" + SHA256(key+";"+tid))
 }
 
 func (api *API) Transaction(request *Request) (response Response) {
