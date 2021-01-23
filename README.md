@@ -27,13 +27,13 @@ func main() {
 	request.TerminalID = "67005551"
 	request.TranDate = "1"
 	request.Sale = new(posnet.Sale)
+	request.Sale.OrderID = ""                    // Sipariş numarası
 	request.Sale.Amount = "2451"                 // Satış tutarı (1,00 -> 100) Son 2 hane kuruş
 	request.Sale.CurrencyCode = "TL"             // TL, US, EU
 	request.Sale.CardNumber = "4506349116608409" // Kart numarası
 	request.Sale.ExpireDate = "0703"             // Son kullanma tarihi (Yıl ve ayın son 2 hanesi) YYAA
 	request.Sale.CVV2 = "000"                    // Cvv2 Kodu (kartın arka yüzündeki 3 haneli numara)
 	request.Sale.Installment = "00"              // peşin: "00", 2 taksit: "02"
-	request.Sale.OrderID = ""                    // Sipariş numarası
 	response := api.Transaction(request)
 	pretty, _ := xml.MarshalIndent(response, " ", " ")
 	fmt.Println(string(pretty))
@@ -58,7 +58,7 @@ func main() {
 	request.TerminalID = "67002706"   // Terminal numarası
 	request.OOS = new(posnet.OOS)
 	request.OOS.PosnetID = "142"                // POSNET numarası
-	request.OOS.XID = "YKB_0000080603143050"    // Sipariş numarası
+	request.OOS.XID = ""                        // Sipariş numarası
 	request.OOS.TranType = "Sale"               // İşlem tipi ("Sale","Auth")
 	request.OOS.Amount = "5696"                 // Satış tutarı (1,00 -> 100) Son 2 hane kuruş
 	request.OOS.CurrencyCode = "TL"             // TL, US, EU
