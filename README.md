@@ -57,18 +57,21 @@ func main() {
 	request.MerchantID = "6706598320" // Üye işyeri numarası
 	request.TerminalID = "67005551"   // Terminal numarası
 	request.OOS = new(posnet.OOS)
-	request.OOS.PosnetID = "9644"               // POSNET numarası
-	request.OOS.XID = ""                        // Sipariş numarası
-	request.OOS.TranType = "Sale"               // İşlem tipi ("Sale","Auth")
-	request.OOS.Amount = "5696"                 // Satış tutarı (1,00 -> 100) Son 2 hane kuruş
-	request.OOS.CurrencyCode = "TL"             // TL, US, EU
-	request.OOS.CardHolder = ""                 // Kart sahibi
-	request.OOS.CardNumber = "5400637500005263" // Kart numarası
-	request.OOS.ExpireDate = "0607"             // Son kullanma tarihi (Yıl ve ayın son 2 hanesi) YYAA
-	request.OOS.CVV2 = "111"                    // Cvv2 Kodu (kartın arka yüzündeki 3 haneli numara)
-	request.OOS.Installment = "00"              // peşin: "00", 2 taksit: "02"
+	request.OOS.PosnetID = "9644"                // POSNET numarası
+	request.OOS.XID = "YKB_TST_190620093100_024" // Sipariş numarası
+	request.OOS.TranType = "Sale"                // İşlem tipi ("Sale","Auth")
+	request.OOS.Amount = "175"                   // Satış tutarı (1,00 -> 100) Son 2 hane kuruş
+	request.OOS.CurrencyCode = "TL"              // TL, US, EU
+	request.OOS.CardHolder = ""                  // Kart sahibi
+	request.OOS.CardNumber = "5400637500005263"  // Kart numarası
+	request.OOS.ExpireDate = "0607"              // Son kullanma tarihi (Yıl ve ayın son 2 hanesi) YYAA
+	request.OOS.CVV2 = "111"                     // Cvv2 Kodu (kartın arka yüzündeki 3 haneli numara)
+	request.OOS.Installment = "00"               // peşin: "00", 2 taksit: "02"
 	response := api.Transaction(request)
 	pretty, _ := xml.MarshalIndent(response, " ", " ")
 	fmt.Println(string(pretty))
+
+	mac := posnet.MAC(request.OOS.XID.(string), request.OOS.Amount.(string), request.OOS.CurrencyCode.(string), request.MerchantID.(string), "10,10,10,10,10,10,10,10", request.TerminalID.(string))
+	fmt.Println(mac)
 }
 ```
