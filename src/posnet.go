@@ -110,7 +110,7 @@ type Response struct {
 func SHA256(data string) (hash string) {
 	h := sha256.New()
 	h.Write([]byte(data))
-	hash = base64.URLEncoding.EncodeToString(h.Sum(nil))
+	hash = base64.StdEncoding.EncodeToString(h.Sum(nil))
 	return hash
 }
 
