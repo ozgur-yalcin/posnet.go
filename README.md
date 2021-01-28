@@ -28,7 +28,7 @@ const (
 
 // DİREKT SATIŞ (3D'siz)
 func main() {
-	api := &posnet.API{"yapikreditest"} // "yapikredi","yapikreditest"
+	api := &posnet.API{"test"} // "prod","test"
 	request := new(posnet.Request)
 	request.MerchantID = merchantID
 	request.TerminalID = terminalID
@@ -96,6 +96,7 @@ func OOSHandler(w http.ResponseWriter, r *http.Request) {
 			res := OOS()
 			if res.Approved == "1" {
 				data := make(map[string]interface{})
+				data["url"] = posnet.EndPoints["prod3d"] // "prod3d","test3d"
 				data["host"] = httpHost
 				data["port"] = httpPort
 				data["lang"] = language
@@ -135,7 +136,7 @@ func OOSHandler(w http.ResponseWriter, r *http.Request) {
 
 // 3d secure - Verilerin şifrelenmesi 1. adım
 func OOS() (response posnet.Response) {
-	api := &posnet.API{"yapikreditest"} // "yapikredi","yapikreditest"
+	api := &posnet.API{"test"} // "prod","test"
 	request := new(posnet.Request)
 	request.MerchantID = merchantID
 	request.TerminalID = terminalID
@@ -158,7 +159,7 @@ func OOS() (response posnet.Response) {
 
 // 3d secure - Kullanıcı Doğrulama (2. adım)
 func OOSMerchant(xid, amount, currency, mdata, bdata, sign string) (response posnet.Response) {
-	api := &posnet.API{"yapikreditest"} // "yapikredi","yapikreditest"
+	api := &posnet.API{"test"} // "prod","test"
 	request := new(posnet.Request)
 	request.MerchantID = merchantID
 	request.TerminalID = terminalID
@@ -179,7 +180,7 @@ func OOSMerchant(xid, amount, currency, mdata, bdata, sign string) (response pos
 
 // 3d secure - Finansallaştırma (3. adım)
 func OOSTransaction(xid, amount, currency, bdata string) (response posnet.Response) {
-	api := &posnet.API{"yapikreditest"} // "yapikredi","yapikreditest"
+	api := &posnet.API{"test"} // "prod","test"
 	request := new(posnet.Request)
 	request.MerchantID = merchantID
 	request.TerminalID = terminalID

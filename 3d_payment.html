@@ -1,7 +1,7 @@
 <html>
 <body>
 <center>
-<form action="https://setmpos.ykb.com/3DSWebService/YKBPaymentService" method="post">
+<form action="{{.url}}" method="post">
 <input name="mid" type="hidden" value="{{.mid}}" />
 <input name="posnetID" type="hidden" value="{{.pid}}" />
 <input name="posnetData"  id="posnetData" type="hidden" value="{{.data1}}" />

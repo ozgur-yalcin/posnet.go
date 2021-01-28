@@ -15,7 +15,7 @@ const (
 
 // DİREKT SATIŞ (3D'siz)
 func main() {
-	api := &posnet.API{"yapikreditest"} // "yapikredi","yapikreditest"
+	api := &posnet.API{"test"} // "prod","test"
 	request := new(posnet.Request)
 	request.MerchantID = merchantID
 	request.TerminalID = terminalID
