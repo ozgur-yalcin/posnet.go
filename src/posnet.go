@@ -5,7 +5,6 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/xml"
-	"fmt"
 	"log"
 	"net/http"
 	"net/url"
@@ -165,10 +164,9 @@ func XID(n int) string {
 }
 
 func (api *API) Transaction(request *Request) (response Response) {
-	xmldata, _ := xml.MarshalIndent(request, " ", " ")
+	xmldata, _ := xml.Marshal(request)
 	urldata := url.Values{}
 	urldata.Set("xmldata", string(xmldata))
-	fmt.Println(string(xmldata))
 	req, err := http.NewRequest("POST", EndPoints[api.Bank], strings.NewReader(urldata.Encode()))
 	if err != nil {
 		log.Println(err)
