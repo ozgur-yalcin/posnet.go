@@ -79,6 +79,15 @@ const (
 	httpPort = ":8080"
 )
 
+func main() {
+	http.HandleFunc("/", OOSHandler)
+	server := http.Server{Addr: httpHost + httpPort, ReadTimeout: 30 * time.Second, WriteTimeout: 30 * time.Second}
+	e := server.ListenAndServe()
+	if e != nil {
+		fmt.Println(e)
+	}
+}
+
 // 3d secure - Ödeme test sayfası
 func OOSHandler(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path == "/" {
@@ -186,14 +195,5 @@ func OOSTransaction(xid, amount, currency, bdata string) (response posnet.Respon
 		return response
 	}
 	return posnet.Response{}
-}
-
-func main() {
-	http.HandleFunc("/", OOSHandler)
-	server := http.Server{Addr: httpHost + httpPort, ReadTimeout: 30 * time.Second, WriteTimeout: 30 * time.Second}
-	e := server.ListenAndServe()
-	if e != nil {
-		fmt.Println(e)
-	}
 }
 ```
