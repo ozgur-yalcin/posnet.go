@@ -1,0 +1,19 @@
+<html>
+<body>
+<center>
+<form action="https://setmpos.ykb.com/3DSWebService/YKBPaymentService" method="post">
+<input name="mid" type="hidden" value="{{.mid}}" />
+<input name="posnetID" type="hidden" value="{{.pid}}" />
+<input name="posnetData"  id="posnetData" type="hidden" value="{{.data1}}" />
+<input name="posnetData2" id="posnetData2" type="hidden" value="{{.data2}}" />
+<input name="digest" id="sign" type="hidden" value="{{.sign}}" />
+<input name="vftCode" id="vftCode" type="hidden" value="" />
+<input name="merchantReturnURL" type="hidden" id="merchantReturnURL" value="http://{{.host}}{{.port}}/" />
+<input name="url" type="hidden" id="url" value="http://{{.host}}{{.port}}/" />
+<input name="openANewWindow" type="hidden" id="openANewWindow" value="0" />
+<input name="lang" type="hidden" id="lang" value="{{.lang}}" /> 
+<input type="submit" name="Submit" value="Ödeme Yap" />
+</form>
+</center>
+</body>
+</html>

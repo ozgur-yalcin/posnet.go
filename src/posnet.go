@@ -1,9 +1,11 @@
 package posnet
 
 import (
+	"crypto/rand"
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/xml"
+	"fmt"
 	"log"
 	"net/http"
 	"net/url"
@@ -141,14 +143,30 @@ func SHA256(data string) (hash string) {
 	return hash
 }
 
-func MAC(xid, amount, currency, mid, key, tid string) string {
-	return SHA256(xid + ";" + amount + ";" + currency + ";" + mid + ";" + SHA256(key+";"+tid))
+func MAC(xid, amount, currency, mid, key, tid, extra string) (mac string) {
+	if extra != "" {
+		mac = SHA256(extra + ";" + xid + ";" + amount + ";" + currency + ";" + mid + ";" + SHA256(key+";"+tid))
+	} else {
+		mac = SHA256(xid + ";" + amount + ";" + currency + ";" + mid + ";" + SHA256(key+";"+tid))
+	}
+	return mac
+}
+
+func XID(n int) string {
+	const alphanum = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+	var bytes = make([]byte, n)
+	rand.Read(bytes)
+	for i, b := range bytes {
+		bytes[i] = alphanum[b%byte(len(alphanum))]
+	}
+	return string(bytes)
 }
 
 func (api *API) Transaction(request *Request) (response Response) {
-	xmldata, _ := xml.Marshal(request)
+	xmldata, _ := xml.MarshalIndent(request, " ", " ")
 	urldata := url.Values{}
 	urldata.Set("xmldata", string(xmldata))
+	fmt.Println(string(xmldata))
 	req, err := http.NewRequest("POST", EndPoints[api.Bank], strings.NewReader(urldata.Encode()))
 	if err != nil {
 		log.Println(err)
@@ -158,8 +176,12 @@ func (api *API) Transaction(request *Request) (response Response) {
 	req.Header.Set("X-MERCHANT-ID", request.MerchantID.(string))
 	req.Header.Set("X-TERMINAL-ID", request.TerminalID.(string))
 	if request.OOS != nil {
-		req.Header.Set("X-CORRELATION-ID", request.OOS.XID.(string))
-		req.Header.Set("X-POSNET-ID", request.OOS.PosnetID.(string))
+		if request.OOS.XID != nil {
+			req.Header.Set("X-CORRELATION-ID", request.OOS.XID.(string))
+		}
+		if request.OOS.PosnetID != nil {
+			req.Header.Set("X-POSNET-ID", request.OOS.PosnetID.(string))
+		}
 	}
 	cli := new(http.Client)
 	res, err := cli.Do(req)
