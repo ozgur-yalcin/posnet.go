@@ -10,7 +10,7 @@ document.getElementById('body').insertAdjacentHTML("beforeend", "Bekleyiniz..");
 </head>
 <body onload="javascript:submitonload();">
 <center>
-<form action="{{.url}}" method="post">
+<form action="{{.url}}" method="post" name="payment">
 <input name="mid" type="hidden" value="{{.mid}}" />
 <input name="posnetID" type="hidden" value="{{.pid}}" />
 <input name="posnetData"  id="posnetData" type="hidden" value="{{.data1}}" />
