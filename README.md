@@ -116,7 +116,7 @@ func OOSHandler(w http.ResponseWriter, r *http.Request) {
 			res := OOS(cardowner, cardnumber, cardmonth, cardyear, cardcvc, fmt.Sprintf("%v", amount)+fmt.Sprintf("%02v", decimal), installment)
 			if res.Approved == "1" {
 				data := make(map[string]interface{})
-				data["url"] = posnet.EndPoints["TEST3d"] // "PROD3d","TEST3d"
+				data["url"] = posnet.EndPoints[environment+"3d"]
 				data["scheme"] = httpScheme
 				data["host"] = httpHost
 				data["port"] = httpPort
