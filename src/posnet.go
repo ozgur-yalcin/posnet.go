@@ -14,9 +14,9 @@ import (
 )
 
 var EndPoints map[string]string = map[string]string{
-	"prod":   "https://posnet.yapikredi.com.tr/PosnetWebService/XML",
+	"PROD":   "https://posnet.yapikredi.com.tr/PosnetWebService/XML",
 	"prod3d": "https://posnet.yapikredi.com.tr/3DSWebService/YKBPaymentService",
-	"test":   "https://setmpos.ykb.com/PosnetWebService/XML",
+	"TEST":   "https://setmpos.ykb.com/PosnetWebService/XML",
 	"test3d": "https://setmpos.ykb.com/3DSWebService/YKBPaymentService",
 }
 
