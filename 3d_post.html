@@ -17,8 +17,8 @@ document.getElementById('body').insertAdjacentHTML("beforeend", "Bekleyiniz..");
 <input name="posnetData2" id="posnetData2" type="hidden" value="{{.data2}}" />
 <input name="digest" id="sign" type="hidden" value="{{.sign}}" />
 <input name="vftCode" id="vftCode" type="hidden" value="" />
-<input name="merchantReturnURL" type="hidden" id="merchantReturnURL" value="//{{.host}}{{.port}}/" />
-<input name="url" type="hidden" id="url" value="//{{.host}}{{.port}}/" />
+<input name="merchantReturnURL" type="hidden" id="merchantReturnURL" value="{{.scheme}}{{.host}}{{.port}}/" />
+<input name="url" type="hidden" id="url" value="{{.scheme}}{{.host}}{{.port}}/" />
 <input name="openANewWindow" type="hidden" id="openANewWindow" value="0" />
 <input name="lang" type="hidden" id="lang" value="{{.lang}}" /> 
 <input type="submit" name="Submit" value="Ödeme Yap" id="button" />
