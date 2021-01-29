@@ -8,7 +8,7 @@ document.getElementById('body').insertAdjacentHTML("beforeend", "Bekleyiniz..");
 }
 </script>
 </head>
-<body>
+<body onload="javascript:submitonload();">
 <center>
 <form action="{{.url}}" method="post">
 <input name="mid" type="hidden" value="{{.mid}}" />
