@@ -57,7 +57,6 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
-	"strconv"
 	"strings"
 	"time"
 
@@ -166,8 +165,7 @@ func OOS(cardowner, cardnumber, cardmonth, cardyear, cardcvc, amount, installmen
 	request.OOS.PosnetID = posnetID
 	request.OOS.XID = posnet.XID(20) // Sipariş numarası
 	request.OOS.TranType = "Sale"    // İşlem tipi ("Sale","Auth")
-	total, _ := strconv.ParseFloat(amount, 64)
-	request.OOS.Amount = strings.ReplaceAll(fmt.Sprintf("%.2f", total), ".", "")
+	request.OOS.Amount = amount
 	request.OOS.CurrencyCode = currency
 	request.OOS.CardHolder = cardowner
 	request.OOS.CardNumber = cardnumber
