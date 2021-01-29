@@ -71,7 +71,7 @@ const (
 	terminalID  = "67005551"                // Terminal numarası
 	posnetID    = "9644"                    // POSNET numarası
 	secretKey   = "10,10,10,10,10,10,10,10" // Güvenlik anahtarı
-	currency    = "TL"                      // TL, US, EU
+	currency    = "TL"                      // Para birimi (TL, US, EU)
 	language    = "tr"                      // Dil
 )
 
