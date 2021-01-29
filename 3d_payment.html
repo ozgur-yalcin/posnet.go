@@ -1,18 +1,20 @@
 <html>
 <body>
 <center>
-<form action="{{.url}}" method="post">
-<input name="mid" type="hidden" value="{{.mid}}" />
-<input name="posnetID" type="hidden" value="{{.pid}}" />
-<input name="posnetData"  id="posnetData" type="hidden" value="{{.data1}}" />
-<input name="posnetData2" id="posnetData2" type="hidden" value="{{.data2}}" />
-<input name="digest" id="sign" type="hidden" value="{{.sign}}" />
-<input name="vftCode" id="vftCode" type="hidden" value="" />
-<input name="merchantReturnURL" type="hidden" id="merchantReturnURL" value="http://{{.host}}{{.port}}/" />
-<input name="url" type="hidden" id="url" value="http://{{.host}}{{.port}}/" />
-<input name="openANewWindow" type="hidden" id="openANewWindow" value="0" />
-<input name="lang" type="hidden" id="lang" value="{{.lang}}" /> 
-<input type="submit" name="Submit" value="Ödeme Yap" />
+<form action="/" method="post">
+<div>Kart sahibi</div>
+<div><input type="text" name="cardowner" style="width:160px;"></div>
+<div>Kart numarası</div>
+<div><input type="text" name="cardnumber" placeholder="xxxx xxxx xxxx xxxx" style="width:155px;" maxlength="16"></div>
+<div>Son kullanma tarihi</div>
+<div><input type="text" name="cardmonth" placeholder="xx" style="width:45px;text-align:center;" maxlength="2"> / <input type="text" name="cardyear" placeholder="xx" style="width:45px;text-align:center;" maxlength="2"> ay/yıl</div>
+<div>CVC</div>
+<div><input type="text" name="cardcvc" placeholder="xxx" style="width:55px;text-align:center;" maxlength="3"></div>
+<div>Tutar</div>
+<div><input type="text" name="amount" placeholder="0" style="width:55px;text-align:center;">,<input type="text" name="decimal" placeholder="00" style="width:55px;text-align:center;" maxlength="2"></div>
+<div>Taksit</div>
+<div><input type="text" name="installment" placeholder="0" style="width:55px;text-align:center;" maxlength="2"></div>
+<div style="margin-top:4px;"><input type="submit" value="Öde"></div>
 </form>
 </center>
 </body>
