@@ -75,6 +75,7 @@ const (
 
 // Test sunucu bilgileri
 const (
+	httpScheme = "http://"
 	httpHost = "localhost"
 	httpPort = ":8080"
 )
@@ -114,6 +115,7 @@ func OOSHandler(w http.ResponseWriter, r *http.Request) {
 			if res.Approved == "1" {
 				data := make(map[string]interface{})
 				data["url"] = posnet.EndPoints["test3d"] // "prod3d","test3d"
+				data["scheme"] = httpScheme
 				data["host"] = httpHost
 				data["port"] = httpPort
 				data["lang"] = language
@@ -150,7 +152,7 @@ func OOSHandler(w http.ResponseWriter, r *http.Request) {
 			amount := strings.ReplaceAll(r.FormValue("Amount"), ",", "")
 			OOSMerchant(xid, amount, currency, mdata, bdata, sign)
 			OOSTransaction(xid, amount, currency, bdata)
-			http.Redirect(w, r, "//"+httpHost+httpPort, http.StatusMovedPermanently)
+			http.Redirect(w, r, httpScheme+httpHost+httpPort, http.StatusMovedPermanently)
 		}
 	}
 }
