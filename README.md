@@ -9,7 +9,7 @@ Posnet (Yapı Kredi) Sanal POS API with golang
 go get github.com/ozgur-soft/posnet
 ```
 
-# Sanalpos satış işlemi
+# Sanalpos direkt satış işlemi (3D'siz)
 ```go
 package main
 
@@ -27,7 +27,6 @@ const (
 	terminalID  = "67005551"   // Terminal numarası
 )
 
-// DİREKT SATIŞ (3D'siz)
 func main() {
 	api := &posnet.API{environment}
 	request := new(posnet.Request)
