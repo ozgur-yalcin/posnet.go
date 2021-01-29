@@ -78,13 +78,13 @@ const (
 const (
 	httpScheme = "http://"   // "http://" , "https://"
 	httpHost   = "localhost" // "localhost" , "alanadiniz.com"
-	httpPort   = ":8080"     // ssl için :443 veya :https kullanmalıdır
+	httpPort   = ":8080"     // ssl için :443 veya :https kullanılmalıdır
 )
 
 func main() {
 	http.HandleFunc("/", OOSHandler)
 	server := http.Server{Addr: httpHost + httpPort, ReadTimeout: 30 * time.Second, WriteTimeout: 30 * time.Second}
-	e := server.ListenAndServe() // ssl için server.ListenAndServeTLS(".cert dosyası", ".key dosyası") kullanmalıdır.
+	e := server.ListenAndServe() // ssl için server.ListenAndServeTLS(".cert dosyası", ".key dosyası") kullanılmalıdır.
 	if e != nil {
 		fmt.Println(e)
 	}
