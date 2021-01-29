@@ -57,6 +57,7 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -90,13 +91,30 @@ func main() {
 
 // 3d secure - Ödeme test sayfası
 func OOSHandler(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path == "/" {
+	switch r.URL.Path {
+	case "/":
 		switch r.Method {
 		case "GET":
-			res := OOS()
+			data := make(map[string]interface{})
+			buffer := new(bytes.Buffer)
+			err := template.Must(template.New("3d_payment.html").ParseGlob("*.html")).Execute(buffer, data)
+			if err != nil {
+				fmt.Println(err)
+			}
+			buffer.WriteTo(w)
+		case "POST":
+			cardowner := r.FormValue("cardowner")
+			cardnumber := r.FormValue("cardnumber")
+			cardmonth := r.FormValue("cardmonth")
+			cardyear := r.FormValue("cardyear")
+			cardcvc := r.FormValue("cardcvc")
+			amount := r.FormValue("amount")
+			decimal := r.FormValue("decimal")
+			installment := r.FormValue("installment")
+			res := OOS(cardowner, cardnumber, cardmonth, cardyear, cardcvc, fmt.Sprintf("%v", amount)+fmt.Sprintf("%02v", decimal), installment)
 			if res.Approved == "1" {
 				data := make(map[string]interface{})
-				data["url"] = posnet.EndPoints["prod3d"] // "prod3d","test3d"
+				data["url"] = posnet.EndPoints["test3d"] // "prod3d","test3d"
 				data["host"] = httpHost
 				data["port"] = httpPort
 				data["lang"] = language
@@ -106,7 +124,7 @@ func OOSHandler(w http.ResponseWriter, r *http.Request) {
 				data["data2"] = res.OOS.Data2
 				data["sign"] = res.OOS.Sign
 				buffer := new(bytes.Buffer)
-				err := template.Must(template.New("3d_payment.html").ParseGlob("*.html")).Execute(buffer, data)
+				err := template.Must(template.New("3d_post.html").ParseGlob("*.html")).Execute(buffer, data)
 				if err != nil {
 					fmt.Println(err)
 				}
@@ -122,6 +140,9 @@ func OOSHandler(w http.ResponseWriter, r *http.Request) {
 				}
 				buffer.WriteTo(w)
 			}
+		}
+	case "/payment":
+		switch r.Method {
 		case "POST":
 			mdata := r.FormValue("MerchantPacket")
 			bdata := r.FormValue("BankPacket")
@@ -130,12 +151,13 @@ func OOSHandler(w http.ResponseWriter, r *http.Request) {
 			amount := strings.ReplaceAll(r.FormValue("Amount"), ",", "")
 			OOSMerchant(xid, amount, currency, mdata, bdata, sign)
 			OOSTransaction(xid, amount, currency, bdata)
+			http.Redirect(w, r, "//"+httpHost+httpPort, http.StatusMovedPermanently)
 		}
 	}
 }
 
 // 3d secure - Verilerin şifrelenmesi 1. adım
-func OOS() (response posnet.Response) {
+func OOS(cardowner, cardnumber, cardmonth, cardyear, cardcvc, amount, installment string) (response posnet.Response) {
 	api := &posnet.API{"test"} // "prod","test"
 	request := new(posnet.Request)
 	request.MerchantID = merchantID
@@ -144,13 +166,14 @@ func OOS() (response posnet.Response) {
 	request.OOS.PosnetID = posnetID
 	request.OOS.XID = posnet.XID(20) // Sipariş numarası
 	request.OOS.TranType = "Sale"    // İşlem tipi ("Sale","Auth")
-	request.OOS.Amount = "100"       // Satış tutarı (1,00 -> 100) Son 2 hane kuruş
+	total, _ := strconv.ParseFloat(amount, 64)
+	request.OOS.Amount = strings.ReplaceAll(fmt.Sprintf("%.2f", total), ".", "")
 	request.OOS.CurrencyCode = currency
-	request.OOS.CardHolder = ""                 // Kart sahibi
-	request.OOS.CardNumber = "4506349116608409" // Kart numarası
-	request.OOS.ExpireDate = "0703"             // Son kullanma tarihi (Yıl ve ayın son 2 hanesi) YYAA
-	request.OOS.CVV2 = "000"                    // Cvv2 Kodu (kartın arka yüzündeki 3 haneli numara)
-	request.OOS.Installment = "00"              // peşin: "00", 2 taksit: "02"
+	request.OOS.CardHolder = cardowner
+	request.OOS.CardNumber = cardnumber
+	request.OOS.ExpireDate = fmt.Sprintf("%02v", cardyear) + fmt.Sprintf("%02v", cardmonth)
+	request.OOS.CVV2 = fmt.Sprintf("%03v", cardcvc)
+	request.OOS.Installment = fmt.Sprintf("%02v", installment)
 	response = api.Transaction(request)
 	pretty, _ := xml.MarshalIndent(response, " ", " ")
 	fmt.Println(string(pretty))
