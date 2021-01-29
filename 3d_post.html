@@ -1,4 +1,13 @@
 <html>
+<head>
+<script type="text/javascript">
+function submitonload() {
+document.payment.submit();
+document.getElementById('button').remove();
+document.getElementById('body').insertAdjacentHTML("beforeend", "Bekleyiniz..");
+}
+</script>
+</head>
 <body>
 <center>
 <form action="{{.url}}" method="post">
@@ -12,7 +21,7 @@
 <input name="url" type="hidden" id="url" value="//{{.host}}{{.port}}/" />
 <input name="openANewWindow" type="hidden" id="openANewWindow" value="0" />
 <input name="lang" type="hidden" id="lang" value="{{.lang}}" /> 
-<input type="submit" name="Submit" value="Ödeme Yap" />
+<input type="submit" name="Submit" value="Ödeme Yap" id="button" />
 </form>
 </center>
 </body>
