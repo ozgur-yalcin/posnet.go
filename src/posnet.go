@@ -15,9 +15,9 @@ import (
 
 var EndPoints map[string]string = map[string]string{
 	"PROD":   "https://posnet.yapikredi.com.tr/PosnetWebService/XML",
-	"prod3d": "https://posnet.yapikredi.com.tr/3DSWebService/YKBPaymentService",
+	"PROD3d": "https://posnet.yapikredi.com.tr/3DSWebService/YKBPaymentService",
 	"TEST":   "https://setmpos.ykb.com/PosnetWebService/XML",
-	"test3d": "https://setmpos.ykb.com/3DSWebService/YKBPaymentService",
+	"TEST3d": "https://setmpos.ykb.com/3DSWebService/YKBPaymentService",
 }
 
 type API struct {
