@@ -9,13 +9,14 @@ import (
 
 // Üye işyeri bilgileri
 const (
-	merchantID = "6706598320" // Üye işyeri numarası
-	terminalID = "67005551"   // Terminal numarası
+	environment = "TEST"       // Çalışma ortamı "PROD", "TEST"
+	merchantID  = "6706598320" // Üye işyeri numarası
+	terminalID  = "67005551"   // Terminal numarası
 )
 
 // DİREKT SATIŞ (3D'siz)
 func main() {
-	api := &posnet.API{"test"} // "prod","test"
+	api := &posnet.API{environment}
 	request := new(posnet.Request)
 	request.MerchantID = merchantID
 	request.TerminalID = terminalID

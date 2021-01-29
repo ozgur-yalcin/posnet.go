@@ -22,13 +22,14 @@ import (
 
 // Üye işyeri bilgileri
 const (
-	merchantID = "6706598320" // Üye işyeri numarası
-	terminalID = "67005551"   // Terminal numarası
+	environment = "TEST"       // Çalışma ortamı "PROD", "TEST"
+	merchantID  = "6706598320" // Üye işyeri numarası
+	terminalID  = "67005551"   // Terminal numarası
 )
 
 // DİREKT SATIŞ (3D'siz)
 func main() {
-	api := &posnet.API{"TEST"} // "PROD","TEST"
+	api := &posnet.API{environment}
 	request := new(posnet.Request)
 	request.MerchantID = merchantID
 	request.TerminalID = terminalID
@@ -65,19 +66,20 @@ import (
 
 // Üye işyeri bilgileri
 const (
-	merchantID = "6706598320"              // Üye işyeri numarası
-	terminalID = "67005551"                // Terminal numarası
-	posnetID   = "9644"                    // POSNET numarası
-	secretKey  = "10,10,10,10,10,10,10,10" // Güvenlik anahtarı
-	currency   = "TL"                      // TL, US, EU
-	language   = "tr"                      // Dil
+	environment = "TEST"                    // Çalışma ortamı "PROD", "TEST"
+	merchantID  = "6706598320"              // Üye işyeri numarası
+	terminalID  = "67005551"                // Terminal numarası
+	posnetID    = "9644"                    // POSNET numarası
+	secretKey   = "10,10,10,10,10,10,10,10" // Güvenlik anahtarı
+	currency    = "TL"                      // TL, US, EU
+	language    = "tr"                      // Dil
 )
 
 // Test sunucu bilgileri
 const (
 	httpScheme = "http://"
-	httpHost = "localhost"
-	httpPort = ":8080"
+	httpHost   = "localhost"
+	httpPort   = ":8080"
 )
 
 func main() {
@@ -159,7 +161,7 @@ func OOSHandler(w http.ResponseWriter, r *http.Request) {
 
 // 3d secure - Verilerin şifrelenmesi 1. adım
 func OOS(cardowner, cardnumber, cardmonth, cardyear, cardcvc, amount, installment string) (response posnet.Response) {
-	api := &posnet.API{"TEST"} // "PROD","TEST"
+	api := &posnet.API{environment}
 	request := new(posnet.Request)
 	request.MerchantID = merchantID
 	request.TerminalID = terminalID
@@ -182,7 +184,7 @@ func OOS(cardowner, cardnumber, cardmonth, cardyear, cardcvc, amount, installmen
 
 // 3d secure - Kullanıcı Doğrulama (2. adım)
 func OOSMerchant(xid, amount, currency, mdata, bdata, sign string) (response posnet.Response) {
-	api := &posnet.API{"TEST"} // "PROD","TEST"
+	api := &posnet.API{environment}
 	request := new(posnet.Request)
 	request.MerchantID = merchantID
 	request.TerminalID = terminalID
@@ -203,7 +205,7 @@ func OOSMerchant(xid, amount, currency, mdata, bdata, sign string) (response pos
 
 // 3d secure - Finansallaştırma (3. adım)
 func OOSTransaction(xid, amount, currency, bdata string) (response posnet.Response) {
-	api := &posnet.API{"TEST"} // "PROD","TEST"
+	api := &posnet.API{environment}
 	request := new(posnet.Request)
 	request.MerchantID = merchantID
 	request.TerminalID = terminalID
