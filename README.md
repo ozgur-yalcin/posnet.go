@@ -75,17 +75,17 @@ const (
 	language    = "tr"                      // Dil
 )
 
-// Test sunucu bilgileri
+// Sunucu bilgileri
 const (
-	httpScheme = "http://"
-	httpHost   = "localhost"
-	httpPort   = ":8080"
+	httpScheme = "http://"   // "http://" , "https://"
+	httpHost   = "localhost" // "localhost" , "alanadiniz.com"
+	httpPort   = ":8080"     // ssl için :443 veya :https kullanmalıdır
 )
 
 func main() {
 	http.HandleFunc("/", OOSHandler)
 	server := http.Server{Addr: httpHost + httpPort, ReadTimeout: 30 * time.Second, WriteTimeout: 30 * time.Second}
-	e := server.ListenAndServe()
+	e := server.ListenAndServe() // ssl için server.ListenAndServeTLS(".cert dosyası", ".key dosyası") kullanmalıdır.
 	if e != nil {
 		fmt.Println(e)
 	}
