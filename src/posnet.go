@@ -21,7 +21,7 @@ var EndPoints map[string]string = map[string]string{
 }
 
 type API struct {
-	Bank string
+	Mode string
 }
 
 type Request struct {
@@ -167,7 +167,7 @@ func (api *API) Transaction(request *Request) (response Response) {
 	xmldata, _ := xml.Marshal(request)
 	urldata := url.Values{}
 	urldata.Set("xmldata", string(xmldata))
-	req, err := http.NewRequest("POST", EndPoints[api.Bank], strings.NewReader(urldata.Encode()))
+	req, err := http.NewRequest("POST", EndPoints[api.Mode], strings.NewReader(urldata.Encode()))
 	if err != nil {
 		log.Println(err)
 		return response
