@@ -1,6 +1,7 @@
 package posnet
 
 import (
+	"context"
 	"crypto/rand"
 	"crypto/sha256"
 	"encoding/base64"
@@ -163,35 +164,35 @@ func XID(n int) string {
 	return string(bytes)
 }
 
-func (api *API) Transaction(request *Request) (response Response) {
-	xmldata, _ := xml.Marshal(request)
+func (api *API) Transaction(ctx context.Context, req *Request) (res Response) {
+	xmldata, _ := xml.Marshal(req)
 	urldata := url.Values{}
 	urldata.Set("xmldata", string(xmldata))
-	req, err := http.NewRequest("POST", EndPoints[api.Mode], strings.NewReader(urldata.Encode()))
+	request, err := http.NewRequestWithContext(ctx, "POST", EndPoints[api.Mode], strings.NewReader(urldata.Encode()))
 	if err != nil {
 		log.Println(err)
-		return response
+		return res
 	}
-	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-	req.Header.Set("X-MERCHANT-ID", request.MerchantID.(string))
-	req.Header.Set("X-TERMINAL-ID", request.TerminalID.(string))
-	if request.OOS != nil {
-		if request.OOS.XID != nil {
-			req.Header.Set("X-CORRELATION-ID", request.OOS.XID.(string))
+	request.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	request.Header.Set("X-MERCHANT-ID", req.MerchantID.(string))
+	request.Header.Set("X-TERMINAL-ID", req.TerminalID.(string))
+	if req.OOS != nil {
+		if req.OOS.XID != nil {
+			request.Header.Set("X-CORRELATION-ID", req.OOS.XID.(string))
 		}
-		if request.OOS.PosnetID != nil {
-			req.Header.Set("X-POSNET-ID", request.OOS.PosnetID.(string))
+		if req.OOS.PosnetID != nil {
+			request.Header.Set("X-POSNET-ID", req.OOS.PosnetID.(string))
 		}
 	}
-	cli := new(http.Client)
-	res, err := cli.Do(req)
+	client := new(http.Client)
+	response, err := client.Do(request)
 	if err != nil {
 		log.Println(err)
-		return response
+		return res
 	}
-	defer res.Body.Close()
-	decoder := xml.NewDecoder(res.Body)
+	defer response.Body.Close()
+	decoder := xml.NewDecoder(response.Body)
 	decoder.CharsetReader = charset.NewReaderLabel
-	decoder.Decode(&response)
-	return response
+	decoder.Decode(&res)
+	return res
 }
