@@ -14,6 +14,7 @@ go get github.com/ozgur-soft/posnet
 package main
 
 import (
+	"context"
 	"encoding/xml"
 	"fmt"
 
@@ -41,7 +42,7 @@ func main() {
 	request.Sale.ExpireDate = "0703"             // Son kullanma tarihi (Yıl ve ayın son 2 hanesi) YYAA
 	request.Sale.CVV2 = "000"                    // Cvv2 Kodu (kartın arka yüzündeki 3 haneli numara)
 	request.Sale.Installment = "00"              // peşin: "00", 2 taksit: "02"
-	response := api.Transaction(request)
+	response := api.Transaction(context.Background(), request)
 	pretty, _ := xml.MarshalIndent(response, " ", " ")
 	fmt.Println(string(pretty))
 }
@@ -53,6 +54,7 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"encoding/xml"
 	"fmt"
 	"html/template"
@@ -175,7 +177,7 @@ func OOS(cardowner, cardnumber, cardmonth, cardyear, cardcvc, amount, installmen
 	request.OOS.ExpireDate = fmt.Sprintf("%02v", cardyear) + fmt.Sprintf("%02v", cardmonth)
 	request.OOS.CVV2 = fmt.Sprintf("%03v", cardcvc)
 	request.OOS.Installment = fmt.Sprintf("%02v", installment)
-	response = api.Transaction(request)
+	response = api.Transaction(context.Background(), request)
 	pretty, _ := xml.MarshalIndent(response, " ", " ")
 	fmt.Println(string(pretty))
 	return response
@@ -192,7 +194,7 @@ func OOSMerchant(xid, amount, currency, mdata, bdata, sign string) (response pos
 	request.OOSMerchant.BankData = bdata
 	request.OOSMerchant.SIGN = sign
 	request.OOSMerchant.MAC = posnet.MAC(xid, amount, currency, merchantID, secretKey, terminalID, "")
-	response = api.Transaction(request)
+	response = api.Transaction(context.Background(), request)
 	pretty, _ := xml.MarshalIndent(response, " ", " ")
 	fmt.Println(string(pretty))
 	check := posnet.MAC(xid, amount, currency, merchantID, secretKey, terminalID, response.OOSMerchant.MdStatus)
@@ -212,7 +214,7 @@ func OOSTransaction(xid, amount, currency, bdata string) (response posnet.Respon
 	request.OOSTran.BankData = bdata
 	request.OOSTran.MAC = posnet.MAC(xid, amount, currency, merchantID, secretKey, terminalID, "")
 	request.OOSTran.WpAmount = "0"
-	response = api.Transaction(request)
+	response = api.Transaction(context.Background(), request)
 	pretty, _ := xml.MarshalIndent(response, " ", " ")
 	fmt.Println(string(pretty))
 	check := posnet.MAC(xid, amount, currency, merchantID, secretKey, terminalID, response.HostLogKey)
