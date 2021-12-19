@@ -1,12 +1,12 @@
-[![license](https://img.shields.io/:license-mit-blue.svg)](https://github.com/ozgur-soft/posnet/blob/master/LICENSE.md)
-[![documentation](https://pkg.go.dev/badge/github.com/ozgur-soft/posnet)](https://pkg.go.dev/github.com/ozgur-soft/posnet/src)
+[![license](https://img.shields.io/:license-mit-blue.svg)](https://github.com/ozgur-soft/posnet.go/blob/main/LICENSE.md)
+[![documentation](https://pkg.go.dev/badge/github.com/ozgur-soft/posnet.go)](https://pkg.go.dev/github.com/ozgur-soft/posnet.go/src)
 
-# posnet
+# posnet.go
 Posnet (Yapı Kredi) Sanal POS API with golang
 
 # Installation
 ```bash
-go get github.com/ozgur-soft/posnet
+go get github.com/ozgur-soft/posnet.go
 ```
 
 # Sanalpos direkt satış işlemi (3D'siz)
@@ -18,7 +18,7 @@ import (
 	"encoding/xml"
 	"fmt"
 
-	posnet "github.com/ozgur-soft/posnet/src"
+	posnet "github.com/ozgur-soft/posnet.go/src"
 )
 
 // Üye işyeri bilgileri
@@ -62,7 +62,7 @@ import (
 	"strings"
 	"time"
 
-	posnet "github.com/ozgur-soft/posnet/src"
+	posnet "github.com/ozgur-soft/posnet.go/src"
 )
 
 // Üye işyeri bilgileri
