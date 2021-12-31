@@ -1,6 +1,6 @@
-module github.com/ozgur-soft/posnet
+module github.com/ozgur-soft/posnet.go
 
-go 1.15
+go 1.17
 
 require (
 	golang.org/x/net v0.0.0-20210119194325-5f4716e94777
