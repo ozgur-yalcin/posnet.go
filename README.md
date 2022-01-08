@@ -39,8 +39,8 @@ func main() {
 	request.Sale.Amount = "100"                  // Satış tutarı (1,00 -> 100) Son 2 hane kuruş
 	request.Sale.CurrencyCode = "TL"             // Para birimi (TL, US, EU)
 	request.Sale.CardNumber = "4506349116608409" // Kart numarası
-	request.Sale.ExpireDate = "0703"             // Son kullanma tarihi (Yıl ve ayın son 2 hanesi) YYAA
-	request.Sale.CVV2 = "000"                    // Cvv2 Kodu (kartın arka yüzündeki 3 haneli numara)
+	request.Sale.CardExpiry = "0703"             // Son kullanma tarihi (Yıl ve ayın son 2 hanesi) YYAA
+	request.Sale.CardCode = "000"                // Cvv2 Kodu (kartın arka yüzündeki 3 haneli numara)
 	request.Sale.Installment = "00"              // peşin: "00", 2 taksit: "02"
 	response := api.Transaction(context.Background(), request)
 	pretty, _ := xml.MarshalIndent(response, " ", " ")
@@ -106,15 +106,15 @@ func OOSHandler(w http.ResponseWriter, r *http.Request) {
 			}
 			buffer.WriteTo(w)
 		case "POST":
-			cardowner := r.FormValue("cardowner")
+			cardholder := r.FormValue("cardholder")
 			cardnumber := r.FormValue("cardnumber")
 			cardmonth := r.FormValue("cardmonth")
 			cardyear := r.FormValue("cardyear")
-			cardcvc := r.FormValue("cardcvc")
+			cardcode := r.FormValue("cardcode")
 			amount := r.FormValue("amount")
 			decimal := r.FormValue("decimal")
 			installment := r.FormValue("installment")
-			res := OOS(cardowner, cardnumber, cardmonth, cardyear, cardcvc, fmt.Sprintf("%v", amount)+fmt.Sprintf("%02v", decimal), installment)
+			res := OOS(cardholder, cardnumber, cardmonth, cardyear, cardcode, fmt.Sprintf("%v", amount)+fmt.Sprintf("%02v", decimal), installment)
 			if res.Approved == "1" {
 				data := make(map[string]interface{})
 				data["url"] = posnet.EndPoints[environment+"3d"]
@@ -161,7 +161,7 @@ func OOSHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // 3d secure - Verilerin şifrelenmesi 1. adım
-func OOS(cardowner, cardnumber, cardmonth, cardyear, cardcvc, amount, installment string) (response posnet.Response) {
+func OOS(cardholder, cardnumber, cardmonth, cardyear, cardcode, amount, installment string) (response posnet.Response) {
 	api := &posnet.API{environment}
 	request := new(posnet.Request)
 	request.MerchantID = merchantID
@@ -172,10 +172,10 @@ func OOS(cardowner, cardnumber, cardmonth, cardyear, cardcvc, amount, installmen
 	request.OOS.TranType = "Sale"    // İşlem tipi ("Sale","Auth")
 	request.OOS.Amount = amount
 	request.OOS.CurrencyCode = currency
-	request.OOS.CardHolder = cardowner
+	request.OOS.CardHolder = cardholder
 	request.OOS.CardNumber = cardnumber
-	request.OOS.ExpireDate = fmt.Sprintf("%02v", cardyear) + fmt.Sprintf("%02v", cardmonth)
-	request.OOS.CVV2 = fmt.Sprintf("%03v", cardcvc)
+	request.OOS.CardExpiry = fmt.Sprintf("%02v", cardyear) + fmt.Sprintf("%02v", cardmonth)
+	request.OOS.CardCode = fmt.Sprintf("%03v", cardcode)
 	request.OOS.Installment = fmt.Sprintf("%02v", installment)
 	response = api.Transaction(context.Background(), request)
 	pretty, _ := xml.MarshalIndent(response, " ", " ")
