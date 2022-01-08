@@ -46,8 +46,8 @@ type OOS struct {
 	TranType     interface{} `xml:"tranType,omitempty"`
 	CardHolder   interface{} `xml:"cardHolderName,omitempty"`
 	CardNumber   interface{} `xml:"ccno,omitempty"`
-	ExpireDate   interface{} `xml:"expDate,omitempty"`
-	CVV2         interface{} `xml:"cvc,omitempty"`
+	CardExpiry   interface{} `xml:"expDate,omitempty"`
+	CardCode     interface{} `xml:"cvc,omitempty"`
 	Amount       interface{} `xml:"amount,omitempty"`
 	CurrencyCode interface{} `xml:"currencyCode,omitempty"`
 	Installment  interface{} `xml:"installment,omitempty"`
@@ -68,7 +68,7 @@ type OOSTran struct {
 
 type Auth struct {
 	Card         *Card       `xml:"cardInfo,omitempty"`
-	CVV2         interface{} `xml:"cvc,omitempty"`
+	CardCode     interface{} `xml:"cvc,omitempty"`
 	Amount       interface{} `xml:"amount,omitempty"`
 	CurrencyCode interface{} `xml:"currencyCode,omitempty"`
 	Installment  interface{} `xml:"installment,omitempty"`
@@ -83,8 +83,8 @@ type Card struct {
 
 type Sale struct {
 	CardNumber   interface{} `xml:"ccno,omitempty"`
-	ExpireDate   interface{} `xml:"expDate,omitempty"`
-	CVV2         interface{} `xml:"cvc,omitempty"`
+	CardExpiry   interface{} `xml:"expDate,omitempty"`
+	CardCode     interface{} `xml:"cvc,omitempty"`
 	Amount       interface{} `xml:"amount,omitempty"`
 	CurrencyCode interface{} `xml:"currencyCode,omitempty"`
 	Installment  interface{} `xml:"installment,omitempty"`
