@@ -164,6 +164,14 @@ func XID(n int) string {
 	return string(bytes)
 }
 
+func Api(merchantid, terminalid string) (*API, *Request) {
+	api := new(API)
+	request := new(Request)
+	request.MerchantID = merchantid
+	request.TerminalID = terminalid
+	return api, request
+}
+
 func (api *API) Transaction(ctx context.Context, req *Request) (res Response) {
 	xmldata, _ := xml.Marshal(req)
 	urldata := url.Values{}
