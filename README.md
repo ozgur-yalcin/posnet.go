@@ -29,21 +29,20 @@ const (
 )
 
 func main() {
-	api := &posnet.API{environment}
-	request := new(posnet.Request)
-	request.MerchantID = merchantID
-	request.TerminalID = terminalID
-	request.TranDate = "1"
-	request.Sale = new(posnet.Sale)
-	request.Sale.OrderID = posnet.XID(20)        // Sipariş numarası
-	request.Sale.Amount = "100"                  // Satış tutarı (1,00 -> 100) Son 2 hane kuruş
-	request.Sale.CurrencyCode = "TL"             // Para birimi (TL, US, EU)
-	request.Sale.CardNumber = "4506349116608409" // Kart numarası
-	request.Sale.CardExpiry = "0703"             // Son kullanma tarihi (Yıl ve ayın son 2 hanesi) YYAA
-	request.Sale.CardCode = "000"                // Cvv2 Kodu (kartın arka yüzündeki 3 haneli numara)
-	request.Sale.Installment = "00"              // peşin: "00", 2 taksit: "02"
-	response := api.Transaction(context.Background(), request)
-	pretty, _ := xml.MarshalIndent(response, " ", " ")
+	api, req := posnet.Api(merchantID, terminalID)
+	req.Sale = new(posnet.Sale)
+	req.Sale.OrderID = posnet.XID(20)        // Sipariş numarası
+	req.Sale.Amount = "100"                  // Satış tutarı (1,00 -> 100) Son 2 hane kuruş
+	req.Sale.CurrencyCode = "TL"             // Para birimi (TL, US, EU)
+	req.Sale.CardNumber = "4506349116608409" // Kart numarası
+	req.Sale.CardExpiry = "0703"             // Son kullanma tarihi (Yıl ve ayın son 2 hanesi) YYAA
+	req.Sale.CardCode = "000"                // Cvv2 Kodu (kartın arka yüzündeki 3 haneli numara)
+	req.Sale.Installment = "00"              // peşin: "00", 2 taksit: "02"
+	req.TranDate = "1"
+
+	ctx := context.Background()
+	res := api.Transaction(ctx, req)
+	pretty, _ := xml.MarshalIndent(res, " ", " ")
 	fmt.Println(string(pretty))
 }
 ```
@@ -162,41 +161,40 @@ func OOSHandler(w http.ResponseWriter, r *http.Request) {
 
 // 3d secure - Verilerin şifrelenmesi 1. adım
 func OOS(cardholder, cardnumber, cardmonth, cardyear, cardcode, amount, installment string) (response posnet.Response) {
-	api := &posnet.API{environment}
-	request := new(posnet.Request)
-	request.MerchantID = merchantID
-	request.TerminalID = terminalID
-	request.OOS = new(posnet.OOS)
-	request.OOS.PosnetID = posnetID
-	request.OOS.XID = posnet.XID(20) // Sipariş numarası
-	request.OOS.TranType = "Sale"    // İşlem tipi ("Sale","Auth")
-	request.OOS.Amount = amount
-	request.OOS.CurrencyCode = currency
-	request.OOS.CardHolder = cardholder
-	request.OOS.CardNumber = cardnumber
-	request.OOS.CardExpiry = fmt.Sprintf("%02v", cardyear) + fmt.Sprintf("%02v", cardmonth)
-	request.OOS.CardCode = fmt.Sprintf("%03v", cardcode)
-	request.OOS.Installment = fmt.Sprintf("%02v", installment)
-	response = api.Transaction(context.Background(), request)
-	pretty, _ := xml.MarshalIndent(response, " ", " ")
+	api, req := posnet.Api(merchantID, terminalID)
+	req.OOS = new(posnet.OOS)
+	req.OOS.PosnetID = posnetID
+	req.OOS.XID = posnet.XID(20) // Sipariş numarası
+	req.OOS.TranType = "Sale"    // İşlem tipi ("Sale","Auth")
+	req.OOS.Amount = amount
+	req.OOS.CurrencyCode = currency
+	req.OOS.CardHolder = cardholder
+	req.OOS.CardNumber = cardnumber
+	req.OOS.CardExpiry = fmt.Sprintf("%02v", cardyear) + fmt.Sprintf("%02v", cardmonth)
+	req.OOS.CardCode = fmt.Sprintf("%03v", cardcode)
+	req.OOS.Installment = fmt.Sprintf("%02v", installment)
+
+	ctx := context.Background()
+	res := api.Transaction(ctx, req)
+	pretty, _ := xml.MarshalIndent(res, " ", " ")
 	fmt.Println(string(pretty))
-	return response
+	return res
 }
 
 // 3d secure - Kullanıcı Doğrulama (2. adım)
 func OOSMerchant(xid, amount, currency, mdata, bdata, sign string) (response posnet.Response) {
-	api := &posnet.API{environment}
-	request := new(posnet.Request)
-	request.MerchantID = merchantID
-	request.TerminalID = terminalID
-	request.OOSMerchant = new(posnet.OOSMerchant)
-	request.OOSMerchant.MerchantData = mdata
-	request.OOSMerchant.BankData = bdata
-	request.OOSMerchant.SIGN = sign
-	request.OOSMerchant.MAC = posnet.MAC(xid, amount, currency, merchantID, secretKey, terminalID, "")
-	response = api.Transaction(context.Background(), request)
-	pretty, _ := xml.MarshalIndent(response, " ", " ")
+	api, req := posnet.Api(merchantID, terminalID)
+	req.OOSMerchant = new(posnet.OOSMerchant)
+	req.OOSMerchant.MerchantData = mdata
+	req.OOSMerchant.BankData = bdata
+	req.OOSMerchant.SIGN = sign
+	req.OOSMerchant.MAC = posnet.MAC(xid, amount, currency, merchantID, secretKey, terminalID, "")
+
+	ctx := context.Background()
+	res := api.Transaction(ctx, req)
+	pretty, _ := xml.MarshalIndent(res, " ", " ")
 	fmt.Println(string(pretty))
+
 	check := posnet.MAC(xid, amount, currency, merchantID, secretKey, terminalID, response.OOSMerchant.MdStatus)
 	if check == response.OOSMerchant.MAC {
 		return response
@@ -206,17 +204,17 @@ func OOSMerchant(xid, amount, currency, mdata, bdata, sign string) (response pos
 
 // 3d secure - Finansallaştırma (3. adım)
 func OOSTransaction(xid, amount, currency, bdata string) (response posnet.Response) {
-	api := &posnet.API{environment}
-	request := new(posnet.Request)
-	request.MerchantID = merchantID
-	request.TerminalID = terminalID
-	request.OOSTran = new(posnet.OOSTran)
-	request.OOSTran.BankData = bdata
-	request.OOSTran.MAC = posnet.MAC(xid, amount, currency, merchantID, secretKey, terminalID, "")
-	request.OOSTran.WpAmount = "0"
-	response = api.Transaction(context.Background(), request)
-	pretty, _ := xml.MarshalIndent(response, " ", " ")
+	api, req := posnet.Api(merchantID, terminalID)
+	req.OOSTran = new(posnet.OOSTran)
+	req.OOSTran.BankData = bdata
+	req.OOSTran.MAC = posnet.MAC(xid, amount, currency, merchantID, secretKey, terminalID, "")
+	req.OOSTran.WpAmount = "0"
+
+	ctx := context.Background()
+	res := api.Transaction(ctx, req)
+	pretty, _ := xml.MarshalIndent(res, " ", " ")
 	fmt.Println(string(pretty))
+
 	check := posnet.MAC(xid, amount, currency, merchantID, secretKey, terminalID, response.HostLogKey)
 	if check == response.MAC {
 		return response
