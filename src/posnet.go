@@ -155,7 +155,7 @@ func MAC(xid, amount, currency, mid, key, tid, extra string) (mac string) {
 }
 
 func XID(n int) string {
-	const alphanum = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+	const alphanum = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 	var bytes = make([]byte, n)
 	rand.Read(bytes)
 	for i, b := range bytes {
