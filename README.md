@@ -99,7 +99,7 @@ func OOSHandler(w http.ResponseWriter, r *http.Request) {
 		case "GET":
 			data := make(map[string]interface{})
 			buffer := new(bytes.Buffer)
-			err := template.Must(template.New("3d_payment.html").ParseGlob("*.html")).Execute(buffer, data)
+			err := template.Must(template.New("payment.html").ParseGlob("src/3D/*.html")).Execute(buffer, data)
 			if err != nil {
 				fmt.Println(err)
 			}
@@ -127,7 +127,7 @@ func OOSHandler(w http.ResponseWriter, r *http.Request) {
 				data["data2"] = res.OOS.Data2
 				data["sign"] = res.OOS.Sign
 				buffer := new(bytes.Buffer)
-				err := template.Must(template.New("3d_post.html").ParseGlob("*.html")).Execute(buffer, data)
+				err := template.Must(template.New("post.html").ParseGlob("src/3D/*.html")).Execute(buffer, data)
 				if err != nil {
 					fmt.Println(err)
 				}
@@ -137,7 +137,7 @@ func OOSHandler(w http.ResponseWriter, r *http.Request) {
 				data["code"] = res.ErrorCode
 				data["text"] = res.ErrorText
 				buffer := new(bytes.Buffer)
-				err := template.Must(template.New("3d_error.html").ParseGlob("*.html")).Execute(buffer, data)
+				err := template.Must(template.New("error.html").ParseGlob("src/3D/*.html")).Execute(buffer, data)
 				if err != nil {
 					fmt.Println(err)
 				}
