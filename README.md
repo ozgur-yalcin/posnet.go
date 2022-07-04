@@ -30,6 +30,7 @@ const (
 
 func main() {
 	api, req := posnet.Api(merchantID, terminalID)
+	api.Mode = environment
 	req.Sale = new(posnet.Sale)
 	req.Sale.OrderID = posnet.XID(20)        // Sipariş numarası
 	req.Sale.Amount = "100"                  // Satış tutarı (1,00 -> 100) Son 2 hane kuruş
@@ -162,6 +163,7 @@ func OOSHandler(w http.ResponseWriter, r *http.Request) {
 // 3d secure - Verilerin şifrelenmesi 1. adım
 func OOS(cardholder, cardnumber, cardmonth, cardyear, cardcode, amount, installment string) (response posnet.Response) {
 	api, req := posnet.Api(merchantID, terminalID)
+	api.Mode = environment
 	req.OOS = new(posnet.OOS)
 	req.OOS.PosnetID = posnetID
 	req.OOS.XID = posnet.XID(20) // Sipariş numarası
@@ -184,6 +186,7 @@ func OOS(cardholder, cardnumber, cardmonth, cardyear, cardcode, amount, installm
 // 3d secure - Kullanıcı Doğrulama (2. adım)
 func OOSMerchant(xid, amount, currency, mdata, bdata, sign string) (response posnet.Response) {
 	api, req := posnet.Api(merchantID, terminalID)
+	api.Mode = environment
 	req.OOSMerchant = new(posnet.OOSMerchant)
 	req.OOSMerchant.MerchantData = mdata
 	req.OOSMerchant.BankData = bdata
@@ -205,6 +208,7 @@ func OOSMerchant(xid, amount, currency, mdata, bdata, sign string) (response pos
 // 3d secure - Finansallaştırma (3. adım)
 func OOSTransaction(xid, amount, currency, bdata string) (response posnet.Response) {
 	api, req := posnet.Api(merchantID, terminalID)
+	api.Mode = environment
 	req.OOSTran = new(posnet.OOSTran)
 	req.OOSTran.BankData = bdata
 	req.OOSTran.MAC = posnet.MAC(xid, amount, currency, merchantID, secretKey, terminalID, "")
@@ -220,5 +224,73 @@ func OOSTransaction(xid, amount, currency, bdata string) (response posnet.Respon
 		return response
 	}
 	return posnet.Response{}
+}
+```
+
+# Sanalpos iade işlemi
+```go
+package main
+
+import (
+	"context"
+	"encoding/xml"
+	"fmt"
+
+	posnet "github.com/ozgur-soft/posnet.go/src"
+)
+
+// Üye işyeri bilgileri
+const (
+	environment = "TEST"       // Çalışma ortamı "PROD", "TEST"
+	merchantID  = "6706598320" // Üye işyeri numarası
+	terminalID  = "67005551"   // Terminal numarası
+)
+
+func main() {
+	api, req := posnet.Api(merchantID, terminalID)
+	api.Mode = environment
+	req.Return = new(posnet.Return)
+	req.Return.Transaction = "sale"
+	req.Return.HostLogKey = ""     // İşlem numarası
+	req.Return.Amount = "100"      // İade tutarı (1,00 -> 100) Son 2 hane kuruş
+	req.Return.CurrencyCode = "TL" // Para birimi (TL, US, EU)
+
+	ctx := context.Background()
+	res := api.Transaction(ctx, req)
+	pretty, _ := xml.MarshalIndent(res, " ", " ")
+	fmt.Println(string(pretty))
+}
+```
+
+# Sanalpos iptal işlemi
+```go
+package main
+
+import (
+	"context"
+	"encoding/xml"
+	"fmt"
+
+	posnet "github.com/ozgur-soft/posnet.go/src"
+)
+
+// Üye işyeri bilgileri
+const (
+	environment = "TEST"       // Çalışma ortamı "PROD", "TEST"
+	merchantID  = "6706598320" // Üye işyeri numarası
+	terminalID  = "67005551"   // Terminal numarası
+)
+
+func main() {
+	api, req := posnet.Api(merchantID, terminalID)
+	api.Mode = environment
+	req.Reverse = new(posnet.Reverse)
+	req.Reverse.Transaction = "sale"
+	req.Reverse.HostLogKey = "" // İşlem numarası
+
+	ctx := context.Background()
+	res := api.Transaction(ctx, req)
+	pretty, _ := xml.MarshalIndent(res, " ", " ")
+	fmt.Println(string(pretty))
 }
 ```
