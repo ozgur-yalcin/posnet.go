@@ -64,6 +64,14 @@ import (
 	posnet "github.com/ozgur-soft/posnet.go/src"
 )
 
+// Sunucu bilgileri
+const (
+	httpHost = "localhost" // "localhost" , "alanadiniz.com"
+	httpPort = ":8080"     // ssl için :443 veya :https kullanılmalıdır
+
+	returnurl = "http://localhost:8080/"
+)
+
 // Üye işyeri bilgileri
 const (
 	environment = "TEST"                    // Çalışma ortamı "PROD", "TEST"
@@ -75,18 +83,11 @@ const (
 	language    = "tr"                      // Dil
 )
 
-// Sunucu bilgileri
-const (
-	httpScheme = "http://"   // "http://" , "https://"
-	httpHost   = "localhost" // "localhost" , "alanadiniz.com"
-	httpPort   = ":8080"     // ssl için :443 veya :https kullanılmalıdır
-)
-
 func main() {
 	http.HandleFunc("/", OOSHandler)
 	server := http.Server{Addr: httpHost + httpPort, ReadTimeout: 30 * time.Second, WriteTimeout: 30 * time.Second}
-	e := server.ListenAndServe() // ssl için server.ListenAndServeTLS(".cert dosyası", ".key dosyası") kullanılmalıdır.
-	if e != nil {
+	// ssl için server.ListenAndServeTLS(".cert dosyası", ".key dosyası") kullanılmalıdır.
+	if e := server.ListenAndServe(); e != nil {
 		fmt.Println(e)
 	}
 }
@@ -116,10 +117,9 @@ func OOSHandler(w http.ResponseWriter, r *http.Request) {
 			res := OOS(cardholder, cardnumber, cardmonth, cardyear, cardcode, fmt.Sprintf("%v", amount)+fmt.Sprintf("%02v", decimal), installment)
 			if res.Approved == "1" {
 				data := make(map[string]interface{})
-				data["url"] = posnet.EndPoints[environment+"3d"]
-				data["scheme"] = httpScheme
-				data["host"] = httpHost
-				data["port"] = httpPort
+				data["endpoint"] = posnet.EndPoints[environment+"3d"]
+				data["page"] = r.RequestURI
+				data["return"] = returnurl
 				data["lang"] = language
 				data["mid"] = merchantID
 				data["pid"] = posnetID
@@ -154,7 +154,7 @@ func OOSHandler(w http.ResponseWriter, r *http.Request) {
 			amount := strings.ReplaceAll(r.FormValue("Amount"), ",", "")
 			OOSMerchant(xid, amount, currency, mdata, bdata, sign)
 			OOSTransaction(xid, amount, currency, bdata)
-			http.Redirect(w, r, httpScheme+httpHost+httpPort, http.StatusMovedPermanently)
+			http.Redirect(w, r, returnurl, http.StatusMovedPermanently)
 		}
 	}
 }
