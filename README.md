@@ -2,14 +2,14 @@
 [![documentation](https://pkg.go.dev/badge/github.com/ozgur-soft/posnet.go)](https://pkg.go.dev/github.com/ozgur-soft/posnet.go/src)
 
 # Posnet.go
-Posnet (Yapı Kredi) Sanal POS API with golang
+Yapı Kredi (Posnet) POS API with golang
 
 # Installation
 ```bash
 go get github.com/ozgur-soft/posnet.go
 ```
 
-# Sanalpos satış işlemi
+# Satış
 ```go
 package main
 
@@ -51,7 +51,7 @@ func main() {
 }
 ```
 
-# Sanalpos iade işlemi
+# İade
 ```go
 package main
 
@@ -89,7 +89,7 @@ func main() {
 }
 ```
 
-# Sanalpos iptal işlemi
+# İptal
 ```go
 package main
 
