@@ -17,7 +17,7 @@ import (
 	"golang.org/x/net/html/charset"
 )
 
-var EndPoints map[string]string = map[string]string{
+var EndPoints = map[string]string{
 	"PROD":   "https://posnet.yapikredi.com.tr/PosnetWebService/XML",
 	"PROD3D": "https://posnet.yapikredi.com.tr/3DSWebService/YKBPaymentService",
 
@@ -25,7 +25,7 @@ var EndPoints map[string]string = map[string]string{
 	"TEST3D": "https://setmpos.ykb.com/3DSWebService/YKBPaymentService",
 }
 
-var Currencies map[string]string = map[string]string{
+var Currencies = map[string]string{
 	"TRY": "TL",
 	"YTL": "TL",
 	"TRL": "TL",
