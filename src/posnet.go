@@ -25,7 +25,7 @@ var EndPoints = map[string]string{
 	"TEST3D": "https://setmpos.ykb.com/3DSWebService/YKBPaymentService",
 }
 
-var CurrencyCode = map[string]string{
+var Currencies = map[string]string{
 	"TRY": "TL",
 	"YTL": "TL",
 	"TRL": "TL",
@@ -221,7 +221,7 @@ func Installment(installment string) string {
 }
 
 func Currency(currency string) string {
-	return CurrencyCode[currency]
+	return Currencies[currency]
 }
 
 func Expiry(month, year string) string {
