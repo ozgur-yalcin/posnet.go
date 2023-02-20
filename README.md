@@ -1,12 +1,12 @@
-[![license](https://img.shields.io/:license-mit-blue.svg)](https://github.com/ozgur-soft/posnet.go/blob/main/LICENSE.md)
-[![documentation](https://pkg.go.dev/badge/github.com/ozgur-soft/posnet.go)](https://pkg.go.dev/github.com/ozgur-soft/posnet.go/src)
+[![license](https://img.shields.io/:license-mit-blue.svg)](https://github.com/ozgur-yalcin/posnet.go/blob/main/LICENSE.md)
+[![documentation](https://pkg.go.dev/badge/github.com/ozgur-yalcin/posnet.go)](https://pkg.go.dev/github.com/ozgur-yalcin/posnet.go/src)
 
 # Posnet.go
 Yapı Kredi (Posnet) POS API with golang
 
 # Installation
 ```bash
-go get github.com/ozgur-soft/posnet.go
+go get github.com/ozgur-yalcin/posnet.go
 ```
 
 # Satış
@@ -18,7 +18,7 @@ import (
 	"encoding/xml"
 	"fmt"
 
-	posnet "github.com/ozgur-soft/posnet.go/src"
+	posnet "github.com/ozgur-yalcin/posnet.go/src"
 )
 
 // Üye işyeri bilgileri
@@ -60,7 +60,7 @@ import (
 	"encoding/xml"
 	"fmt"
 
-	posnet "github.com/ozgur-soft/posnet.go/src"
+	posnet "github.com/ozgur-yalcin/posnet.go/src"
 )
 
 // Üye işyeri bilgileri
@@ -98,7 +98,7 @@ import (
 	"encoding/xml"
 	"fmt"
 
-	posnet "github.com/ozgur-soft/posnet.go/src"
+	posnet "github.com/ozgur-yalcin/posnet.go/src"
 )
 
 // Üye işyeri bilgileri
