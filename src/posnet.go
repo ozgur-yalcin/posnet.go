@@ -242,9 +242,9 @@ func (api *API) Transaction(ctx context.Context, req *Request) (res Response, er
 	if err != nil {
 		return res, err
 	}
-	postdata := url.Values{}
-	postdata.Set("xmldata", string(xmldata))
-	request, err := http.NewRequestWithContext(ctx, "POST", EndPoints[api.Mode], strings.NewReader(postdata.Encode()))
+	payload := url.Values{}
+	payload.Set("xmldata", string(xmldata))
+	request, err := http.NewRequestWithContext(ctx, "POST", EndPoints[api.Mode], strings.NewReader(payload.Encode()))
 	if err != nil {
 		return res, err
 	}
@@ -279,7 +279,7 @@ func (api *API) Transaction(ctx context.Context, req *Request) (res Response, er
 }
 
 func (api *API) Transaction3D(ctx context.Context, req *Form) (res string, err error) {
-	postdata, err := QueryString(req)
+	payload, err := QueryString(req)
 	if err != nil {
 		return res, err
 	}
@@ -292,8 +292,8 @@ func (api *API) Transaction3D(ctx context.Context, req *Form) (res string, err e
 	html = append(html, `</head>`)
 	html = append(html, `<body onload="javascript:submitonload();" id="body" style="text-align:center;margin:10px;font-family:Arial;font-weight:bold;">`)
 	html = append(html, `<form action="`+EndPoints[api.Mode+"3D"]+`" method="post" name="payment">`)
-	for k := range postdata {
-		html = append(html, `<input type="hidden" name="`+k+`" value="`+postdata.Get(k)+`">`)
+	for k := range payload {
+		html = append(html, `<input type="hidden" name="`+k+`" value="`+payload.Get(k)+`">`)
 	}
 	html = append(html, `<input type="submit" name="Submit" value="Gönder" id="button">`)
 	html = append(html, `</form>`)
